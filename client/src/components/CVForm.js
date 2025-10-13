@@ -1,0 +1,502 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../AuthContext';
+import apiService from '../services/api';
+
+const CVForm = ({ onDataChange }) => {
+  const { currentUser } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [cvId, setCvId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [cvData, setCvData] = useState({
+    personalInfo: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      linkedin: '',
+      website: ''
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    summary: ''
+  });
+
+  const steps = [
+    { id: 1, title: 'Informations Personnelles', component: PersonalInfoStep },
+    { id: 2, title: 'Expériences Professionnelles', component: ExperienceStep },
+    { id: 3, title: 'Formation', component: EducationStep },
+    { id: 4, title: 'Compétences', component: SkillsStep },
+    { id: 5, title: 'Accroche', component: SummaryStep }
+  ];
+
+  useEffect(() => {
+    // Load from localStorage on mount
+    const savedData = localStorage.getItem('cvData');
+    if (savedData) {
+      setCvData(JSON.parse(savedData));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Auto-save to localStorage
+    localStorage.setItem('cvData', JSON.stringify(cvData));
+    onDataChange && onDataChange(cvData);
+
+    // Auto-save to server (debounced)
+    const timeoutId = setTimeout(async () => {
+      if (currentUser) {
+        try {
+          setIsSaving(true);
+          const result = await apiService.saveCV(cvData, cvId);
+          if (result.cvId && !cvId) {
+            setCvId(result.cvId);
+          }
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+        } finally {
+          setIsSaving(false);
+        }
+      }
+    }, 10000); // Save every 10 seconds
+
+    return () => clearTimeout(timeoutId);
+  }, [cvData, onDataChange, currentUser, cvId]);
+
+  const updateCvData = (section, data) => {
+    setCvData(prev => ({
+      ...prev,
+      [section]: data
+    }));
+  };
+
+  const nextStep = () => {
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const CurrentStepComponent = steps[currentStep - 1].component;
+
+  return (
+    <div className="cv-form">
+      <div className="step-indicator">
+        {steps.map((step, index) => (
+          <div
+            key={step.id}
+            className={`step ${currentStep === step.id ? 'active' : currentStep > step.id ? 'completed' : ''}`}
+          >
+            <span className="step-number">{step.id}</span>
+            <span className="step-title">{step.title}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="step-content">
+        <CurrentStepComponent
+          data={cvData}
+          updateData={updateCvData}
+          currentUser={currentUser}
+        />
+      </div>
+
+      <div className="step-navigation">
+        {isSaving && <span className="saving-indicator">Sauvegarde en cours...</span>}
+        {currentStep > 1 && (
+          <button onClick={prevStep} className="btn-secondary">
+            Précédent
+          </button>
+        )}
+        {currentStep < steps.length && (
+          <button onClick={nextStep} className="btn-primary">
+            Suivant
+          </button>
+        )}
+        {currentStep === steps.length && (
+          <button className="btn-primary" onClick={() => onDataChange(cvData, 'download')}>
+            Télécharger PDF (500 FCFA)
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Step Components
+const PersonalInfoStep = ({ data, updateData, currentUser }) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    updateData('personalInfo', {
+      ...data.personalInfo,
+      [name]: value
+    });
+  };
+
+  useEffect(() => {
+    if (currentUser && !data.personalInfo.email) {
+      updateData('personalInfo', {
+        ...data.personalInfo,
+        email: currentUser.email,
+        firstName: currentUser.displayName?.split(' ')[0] || '',
+        lastName: currentUser.displayName?.split(' ').slice(1).join(' ') || ''
+      });
+    }
+  }, [currentUser, data.personalInfo, updateData]);
+
+  return (
+    <div className="personal-info-step">
+      <h2>Informations Personnelles</h2>
+      <div className="form-grid">
+        <div className="form-group">
+          <label>Prénom</label>
+          <input
+            type="text"
+            name="firstName"
+            value={data.personalInfo.firstName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Nom</label>
+          <input
+            type="text"
+            name="lastName"
+            value={data.personalInfo.lastName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={data.personalInfo.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Téléphone</label>
+          <input
+            type="tel"
+            name="phone"
+            value={data.personalInfo.phone}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group full-width">
+          <label>Adresse</label>
+          <input
+            type="text"
+            name="address"
+            value={data.personalInfo.address}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>LinkedIn</label>
+          <input
+            type="url"
+            name="linkedin"
+            value={data.personalInfo.linkedin}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>Site Web</label>
+          <input
+            type="url"
+            name="website"
+            value={data.personalInfo.website}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ExperienceStep = ({ data, updateData }) => {
+  const [experiences, setExperiences] = useState(data.experience || []);
+
+  const addExperience = () => {
+    setExperiences([...experiences, {
+      id: Date.now(),
+      position: '',
+      company: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+      current: false
+    }]);
+  };
+
+  const updateExperience = (id, field, value) => {
+    setExperiences(experiences.map(exp =>
+      exp.id === id ? { ...exp, [field]: value } : exp
+    ));
+  };
+
+  const removeExperience = (id) => {
+    setExperiences(experiences.filter(exp => exp.id !== id));
+  };
+
+  useEffect(() => {
+    updateData('experience', experiences);
+  }, [experiences, updateData]);
+
+  return (
+    <div className="experience-step">
+      <h2>Expériences Professionnelles</h2>
+      {experiences.map((exp, index) => (
+        <div key={exp.id} className="experience-item">
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Poste</label>
+              <input
+                type="text"
+                value={exp.position}
+                onChange={(e) => updateExperience(exp.id, 'position', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Entreprise</label>
+              <input
+                type="text"
+                value={exp.company}
+                onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de début</label>
+              <input
+                type="month"
+                value={exp.startDate}
+                onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de fin</label>
+              <input
+                type="month"
+                value={exp.endDate}
+                onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
+                disabled={exp.current}
+              />
+            </div>
+            <div className="form-group checkbox">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={exp.current}
+                  onChange={(e) => updateExperience(exp.id, 'current', e.target.checked)}
+                />
+                Poste actuel
+              </label>
+            </div>
+            <div className="form-group full-width">
+              <label>Description</label>
+              <textarea
+                value={exp.description}
+                onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
+                rows="3"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => removeExperience(exp.id)}
+            className="btn-remove"
+          >
+            Supprimer
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addExperience} className="btn-add">
+        + Ajouter une expérience
+      </button>
+    </div>
+  );
+};
+
+const EducationStep = ({ data, updateData }) => {
+  const [educations, setEducations] = useState(data.education || []);
+
+  const addEducation = () => {
+    setEducations([...educations, {
+      id: Date.now(),
+      degree: '',
+      institution: '',
+      startDate: '',
+      endDate: '',
+      description: ''
+    }]);
+  };
+
+  const updateEducation = (id, field, value) => {
+    setEducations(educations.map(edu =>
+      edu.id === id ? { ...edu, [field]: value } : edu
+    ));
+  };
+
+  const removeEducation = (id) => {
+    setEducations(educations.filter(edu => edu.id !== id));
+  };
+
+  useEffect(() => {
+    updateData('education', educations);
+  }, [educations, updateData]);
+
+  return (
+    <div className="education-step">
+      <h2>Formation</h2>
+      {educations.map((edu) => (
+        <div key={edu.id} className="education-item">
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Diplôme</label>
+              <input
+                type="text"
+                value={edu.degree}
+                onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Établissement</label>
+              <input
+                type="text"
+                value={edu.institution}
+                onChange={(e) => updateEducation(edu.id, 'institution', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de début</label>
+              <input
+                type="month"
+                value={edu.startDate}
+                onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de fin</label>
+              <input
+                type="month"
+                value={edu.endDate}
+                onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group full-width">
+              <label>Description</label>
+              <textarea
+                value={edu.description}
+                onChange={(e) => updateEducation(edu.id, 'description', e.target.value)}
+                rows="2"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => removeEducation(edu.id)}
+            className="btn-remove"
+          >
+            Supprimer
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addEducation} className="btn-add">
+        + Ajouter une formation
+      </button>
+    </div>
+  );
+};
+
+const SkillsStep = ({ data, updateData }) => {
+  const [skills, setSkills] = useState(data.skills || []);
+  const [newSkill, setNewSkill] = useState('');
+
+  const addSkill = () => {
+    if (newSkill.trim()) {
+      setSkills([...skills, newSkill.trim()]);
+      setNewSkill('');
+    }
+  };
+
+  const removeSkill = (index) => {
+    setSkills(skills.filter((_, i) => i !== index));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addSkill();
+    }
+  };
+
+  useEffect(() => {
+    updateData('skills', skills);
+  }, [skills, updateData]);
+
+  return (
+    <div className="skills-step">
+      <h2>Compétences</h2>
+      <div className="skills-input">
+        <input
+          type="text"
+          value={newSkill}
+          onChange={(e) => setNewSkill(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Ajouter une compétence..."
+        />
+        <button type="button" onClick={addSkill} className="btn-add">
+          Ajouter
+        </button>
+      </div>
+      <div className="skills-list">
+        {skills.map((skill, index) => (
+          <div key={index} className="skill-item">
+            <span>{skill}</span>
+            <button
+              type="button"
+              onClick={() => removeSkill(index)}
+              className="btn-remove"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SummaryStep = ({ data, updateData }) => {
+  const handleChange = (e) => {
+    updateData('summary', e.target.value);
+  };
+
+  return (
+    <div className="summary-step">
+      <h2>Accroche Professionnelle</h2>
+      <div className="form-group">
+        <label>Rédigez une brève présentation de vous (3-5 phrases)</label>
+        <textarea
+          value={data.summary}
+          onChange={handleChange}
+          rows="6"
+          placeholder="Décrivez votre parcours, vos motivations et vos objectifs professionnels..."
+        />
+      </div>
+    </div>
+  );
+};
+
+export default CVForm;

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Template - Modern</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: white;
+    }
+
+    .cv-container {
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 20mm;
+    }
+
+    .cv-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #3498db;
+    }
+
+    .cv-header h1 {
+      font-size: 28pt;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .contact-info {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      font-size: 10pt;
+      color: #666;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .social-links a {
+      color: #3498db;
+      text-decoration: none;
+      font-size: 10pt;
+    }
+
+    .cv-section {
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+
+    .cv-section h2 {
+      font-size: 16pt;
+      color: #3498db;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+
+    .summary-text {
+      font-style: italic;
+      color: #555;
+      font-size: 11pt;
+    }
+
+    .experience-item,
+    .education-item {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    .experience-item h3,
+    .education-item h3 {
+      font-size: 14pt;
+      margin-bottom: 5px;
+      color: #2c3e50;
+    }
+
+    .job-meta,
+    .education-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10pt;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .company,
+    .institution {
+      font-weight: bold;
+    }
+
+    .dates {
+      font-style: italic;
+    }
+
+    .description {
+      font-size: 10pt;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-tag {
+      background: #ecf0f1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 9pt;
+      color: #2c3e50;
+      border: 1px solid #bdc3c7;
+    }
+
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+
+    @media print {
+      .cv-container {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cv-container">
+    <!-- Header -->
+    <header class="cv-header">
+      <h1>{{firstName}} {{lastName}}</h1>
+      <div class="contact-info">
+        {{#email}}<span>{{email}}</span>{{/email}}
+        {{#phone}}<span>{{phone}}</span>{{/phone}}
+        {{#address}}<span>{{address}}</span>{{/address}}
+      </div>
+      <div class="social-links">
+        {{#linkedin}}<a href="{{linkedin}}">LinkedIn</a>{{/linkedin}}
+        {{#website}}<a href="{{website}}">Site Web</a>{{/website}}
+      </div>
+    </header>
+
+    <!-- Summary -->
+    {{#summary}}
+    <section class="cv-section">
+      <h2>Profil</h2>
+      <p class="summary-text">{{summary}}</p>
+    </section>
+    {{/summary}}
+
+    <!-- Experience -->
+    {{#experience}}
+    <section class="cv-section">
+      <h2>Expérience Professionnelle</h2>
+      {{#experience}}
+      <div class="experience-item">
+        <h3>{{position}}</h3>
+        <div class="job-meta">
+          <span class="company">{{company}}</span>
+          <span class="dates">{{startDate}} - {{#current}}Présent{{/current}}{{^current}}{{endDate}}{{/current}}</span>
+        </div>
+        {{#description}}<p class="description">{{description}}</p>{{/description}}
+      </div>
+      {{/experience}}
+    </section>
+    {{/experience}}
+
+    <!-- Education -->
+    {{#education}}
+    <section class="cv-section">
+      <h2>Formation</h2>
+      {{#education}}
+      <div class="education-item">
+        <h3>{{degree}}</h3>
+        <div class="education-meta">
+          <span class="institution">{{institution}}</span>
+          <span class="dates">{{startDate}} - {{endDate}}</span>
+        </div>
+        {{#description}}<p class="description">{{description}}</p>{{/description}}
+      </div>
+      {{/education}}
+    </section>
+    {{/education}}
+
+    <!-- Skills -->
+    {{#skills}}
+    <section class="cv-section">
+      <h2>Compétences</h2>
+      <div class="skills-list">
+        {{#skills}}
+        <span class="skill-tag">{{.}}</span>
+        {{/skills}}
+      </div>
+    </section>
+    {{/skills}}
+  </div>
+</body>
+</html>
