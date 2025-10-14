@@ -1,95 +1,142 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../AuthContext';
 import CVForm from '../components/CVForm';
 import CVPreview from '../components/CVPreview';
 import apiService from '../services/api';
+import {
+  FaArrowLeft,
+  FaEye,
+  FaDownload,
+  FaCheck,
+  FaCreditCard,
+  FaShieldAlt,
+  FaTimes,
+  FaSave,
+  FaSpinner,
+  FaEdit,
+  FaSignOutAlt
+} from 'react-icons/fa';
+
 import styles from './CVCreationPage.module.css';
 
 const CVCreationPage = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
-  const [cvData, setCvData] = useState(null);
-  const [selectedTemplate, setSelectedTemplate] = useState('modern');
-  const [showPreview, setShowPreview] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const { currentUser, logout } = useAuth();
+  const [cvData, setCvData] = useState({
+    personalInfo: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      linkedin: '',
+      website: ''
+    },
+    experiences: [],
+    education: [],
+    skills: [],
+    summary: ''
+  });
+  const [selectedTemplate, setSelectedTemplate] = useState('cyber-modern');
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [previewViewMode, setPreviewViewMode] = useState('desktop');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  // Charger les données sauvegardées
   useEffect(() => {
-    // Check if user is authenticated
     if (!currentUser) {
       navigate('/');
       return;
     }
 
-    // Load selected template from localStorage
+    // Charger le template sélectionné
     const savedTemplate = localStorage.getItem('selectedTemplate');
     if (savedTemplate) {
       setSelectedTemplate(savedTemplate);
     }
 
-    // Load any existing CV data
-    const savedData = localStorage.getItem('cvData');
-    if (savedData) {
-      setCvData(JSON.parse(savedData));
+    // Charger les données CV existantes
+    const savedCvData = localStorage.getItem('cvData');
+    if (savedCvData) {
+      try {
+        const parsedData = JSON.parse(savedCvData);
+        setCvData(parsedData);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      }
     }
   }, [currentUser, navigate]);
 
-  const handleCvDataChange = async (data, action) => {
+  // Sauvegarde manuelle (simulée pour l'UX)
+  const handleManualSave = useCallback(async () => {
+    if (!cvData.personalInfo.firstName) {
+      alert('Veuillez remplir au moins votre prénom avant de sauvegarder.');
+      return;
+    }
+
+    setSaveStatus('saving');
+
+    try {
+      // Simulation sauvegarde (le vrai auto-save se fait dans CVForm)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+
+      // Revenir à idle après 2 secondes
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erreur de sauvegarde:', error);
+      setSaveStatus('error');
+
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 3000);
+    }
+  }, [cvData]);
+
+  // Gestion des modifications des données
+  const handleCvDataChange = useCallback(async (data, action) => {
     setCvData(data);
+    setHasUnsavedChanges(true);
 
     if (action === 'download') {
-      await handleDownload();
+      await handleFinalDownload();
     }
+  }, []);
+
+  // Téléchargement final
+  const handleFinalDownload = async () => {
+    if (!cvData.personalInfo.firstName) {
+      alert('Veuillez remplir vos informations personnelles avant de télécharger.');
+      return;
+    }
+
+    // Ouvrir le modal de paiement
+    setShowPaymentModal(true);
   };
 
-  const handleDownload = async () => {
-    if (!cvData) return;
-
+  const processPaymentAndDownload = async () => {
     try {
-      setIsDownloading(true);
+      setIsProcessing(true);
+      setShowPaymentModal(false);
 
-      // First, save the CV if not already saved
-      let cvId = localStorage.getItem('currentCvId');
-      if (!cvId) {
-        const saveResult = await apiService.saveCV(cvData);
-        cvId = saveResult.cvId;
-        localStorage.setItem('currentCvId', cvId);
-      }
+      // Simulation de traitement de paiement
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Initiate payment
-      const paymentResult = await apiService.initiatePayment(cvId);
+      // Sauvegarder le CV avant téléchargement
+      const saveResult = await apiService.saveCV(cvData);
+      const cvId = saveResult.cvId;
 
-      // Redirect to payment URL (in production, this would be handled by the payment aggregator)
-      if (paymentResult.paymentUrl) {
-        // For demo purposes, simulate successful payment
-        alert(`Paiement initié. En production, vous seriez redirigé vers: ${paymentResult.paymentUrl}`);
-
-        // Simulate webhook callback (in production, this would come from the payment provider)
-        await simulatePaymentSuccess(cvId);
-
-        // Download the PDF
-        const pdfBlob = await apiService.downloadCV(cvId, selectedTemplate);
-        const url = window.URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `CV_${cvData.personalInfo.firstName}_${cvData.personalInfo.lastName}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }
-    } catch (error) {
-      console.error('Download failed:', error);
-      alert('Erreur lors du téléchargement. Veuillez réessayer.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const simulatePaymentSuccess = async (cvId) => {
-    // Simulate webhook call (in production, this would be called by the payment provider)
-    try {
+      // Simuler le paiement réussi (webhook)
       await fetch('http://localhost:5000/api/payment/webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,12 +146,39 @@ const CVCreationPage = () => {
           transactionId: `txn_${Date.now()}`
         })
       });
+
+      // Petite pause pour le traitement du webhook
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Téléchargement du PDF
+      const pdfBlob = await apiService.downloadCV(cvId, selectedTemplate);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `CV_${cvData.personalInfo.firstName}_${cvData.personalInfo.lastName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      alert('Téléchargement réussi ! Votre CV a été généré.');
+
     } catch (error) {
-      console.error('Webhook simulation failed:', error);
+      console.error('Erreur de téléchargement:', error);
+      alert('Erreur lors du téléchargement. Veuillez réessayer.');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleBack = () => {
+  const handleBackToTemplates = () => {
+    if (hasUnsavedChanges) {
+      const confirmLeave = window.confirm(
+        'Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?'
+      );
+      if (!confirmLeave) return;
+    }
+
     window.showLoading && window.showLoading("Retour aux modèles...");
     setTimeout(() => {
       navigate('/templates');
@@ -112,242 +186,424 @@ const CVCreationPage = () => {
     }, 800);
   };
 
-  const togglePreview = () => {
-    setShowPreview(!showPreview);
-  };
-
   if (!currentUser) {
-    return <div>Chargement...</div>;
+    return (
+      <div className={styles.cvCreationLoading}>
+        <div className={styles.cvCreationLoadingSpinner}></div>
+        <p>Chargement de votre espace personnel...</p>
+      </div>
+    );
   }
 
   return (
-    <motion.div
-      className={styles.page}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Header */}
-      <motion.header
-        className={styles.header}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, type: "spring" }}
-      >
-        <div className={styles.headerContent}>
-          <motion.button
-            className={styles.backButton}
-            onClick={handleBack}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+    <div className={styles.cvCreationPage}>
+      {/* En-tête avec navigation */}
+      <header className={styles.cvCreationHeader}>
+        <div className={styles.cvCreationHeaderContent}>
+          <button
+            className={styles.cvCreationBackButton}
+            onClick={handleBackToTemplates}
+            type="button"
           >
-            ← Retour aux modèles
-          </motion.button>
-          <motion.div
-            className={styles.logo}
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className={styles.logoText}>MBOA</span>
-            <span className={styles.logoAccent}>CV</span>
-          </motion.div>
-          <div className={styles.headerActions}>
-            <motion.button
-              className={`${styles.previewToggle} ${showPreview ? styles.active : ''}`}
-              onClick={togglePreview}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              animate={{
-                backgroundColor: showPreview ? 'rgba(0, 255, 255, 0.1)' : 'transparent',
-                borderColor: showPreview ? '#00ffff' : 'rgba(255, 255, 255, 0.3)'
-              }}
-            >
-              <span className={styles.toggleIcon}>
-                {showPreview ? '👁️' : '👁️‍🗨️'}
-              </span>
-              {showPreview ? 'Masquer' : 'Afficher'} l'aperçu
-            </motion.button>
+            <FaArrowLeft />
+            <span>Modèles</span>
+          </button>
+
+          <div className={styles.cvCreationLogo}>
+            <span className={styles.cvCreationLogoText}>MBOA</span>
+            <span className={styles.cvCreationLogoAccent}>CV</span>
           </div>
-        </div>
-      </motion.header>
 
-      {/* Progress Indicator */}
-      <motion.section
-        className={styles.progressSection}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <div className={styles.progressContainer}>
-          <motion.div
-            className={`${styles.progressStep} ${styles.completed}`}
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className={styles.stepNumber}>1</span>
-            <span className={styles.stepLabel}>Modèle</span>
-            <div className={styles.stepCheck}>✓</div>
-          </motion.div>
-          <motion.div
-            className={`${styles.progressLine} ${styles.completed}`}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          />
-          <motion.div
-            className={`${styles.progressStep} ${styles.active}`}
-            whileHover={{ scale: 1.05 }}
-            animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(0, 255, 255, 0.4)',
-                '0 0 0 10px rgba(0, 255, 255, 0)',
-                '0 0 0 0 rgba(0, 255, 255, 0)'
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <span className={styles.stepNumber}>2</span>
-            <span className={styles.stepLabel}>Contenu</span>
-            <div className={styles.stepPulse}></div>
-          </motion.div>
-          <div className={styles.progressLine} />
-          <motion.div
-            className={styles.progressStep}
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className={styles.stepNumber}>3</span>
-            <span className={styles.stepLabel}>Téléchargement</span>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Main Content */}
-      <main className={styles.main}>
-        <div className={`${styles.formSection} ${showPreview ? styles.withPreview : ''}`}>
-          <motion.div
-            className={styles.formContainer}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <div className={styles.formHeader}>
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                Remplissez votre CV
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-              >
-                Remplissez les informations demandées. Vos données sont automatiquement sauvegardées.
-                Vous pouvez reprendre votre travail à tout moment.
-              </motion.p>
-              <motion.div
-                className={styles.autoSaveIndicator}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-              >
-                <span className={styles.saveIcon}>💾</span>
-                <span>Sauvegarde automatique activée</span>
-              </motion.div>
-            </div>
-
-            <CVForm onDataChange={handleCvDataChange} />
-          </motion.div>
-
-          <AnimatePresence>
-            {showPreview && (
-              <motion.div
-                className={styles.previewSection}
-                initial={{ opacity: 0, x: 50, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 50, scale: 0.95 }}
-                transition={{ duration: 0.4, type: "spring", stiffness: 300 }}
-              >
-                <div className={styles.previewContainer}>
-                  <motion.div
-                    className={styles.previewHeader}
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.2 }}
-                  >
-                    <h2>Aperçu de votre CV</h2>
-                    <motion.span
-                      className={styles.templateBadge}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      Modèle: {selectedTemplate.charAt(0).toUpperCase() + selectedTemplate.slice(1)}
-                    </motion.span>
-                  </motion.div>
-                  <motion.div
-                    className={styles.previewContent}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.3 }}
-                  >
-                    <CVPreview cvData={cvData} template={selectedTemplate} />
-                  </motion.div>
-                </div>
-              </motion.div>
+          <div className={styles.cvCreationHeaderActions}>
+            {/* Indicateur d'état avec sauvegarde manuelle */}
+            <div className={styles.cvCreationSaveSection}>
+            {hasUnsavedChanges && (
+              <span className={styles.cvCreationUnsavedIndicator}>
+                Modifications non sauvegardées
+              </span>
             )}
-          </AnimatePresence>
+            <button
+              className={`${styles.cvCreationSaveButton} ${saveStatus}`}
+              onClick={handleManualSave}
+              disabled={saveStatus === 'saving' || !hasUnsavedChanges}
+              type="button"
+            >
+              {saveStatus === 'saving' && <FaSpinner className={styles.cvCreationSaveSpinner} />}
+              {saveStatus === 'saved' && <FaCheck />}
+              {saveStatus === 'idle' && <FaSave />}
+              {saveStatus === 'saving' ? 'Sauvegarde...' :
+               saveStatus === 'saved' ? 'Sauvegardé !' :
+               'Sauvegarder'}
+            </button>
+          </div>
+
+          <button
+            className={styles.cvCreationLogoutButton}
+            onClick={logout}
+            title="Se déconnecter"
+          >
+            <FaSignOutAlt />
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+      {/* Indicateur de progression */}
+      <div className={styles.cvCreationProgress}>
+        <div className={styles.cvCreationProgressBar}>
+          <div
+            className={styles.cvCreationProgressFill}
+            style={{ width: '66%' }}
+          ></div>
+        </div>
+        <div className={styles.cvCreationProgressSteps}>
+          <span className={styles.cvCreationStep + ' ' + styles.cvCreationStepCompleted}>
+            <FaCheck />
+            Modèle choisi
+          </span>
+          <span className={styles.cvCreationStep + ' ' + styles.cvCreationStepActive}>
+            <FaEdit />
+            Rédaction
+          </span>
+          <span className={styles.cvCreationStep + ' ' + styles.cvCreationStepNext}>
+            <FaDownload />
+            Téléchargement
+          </span>
+        </div>
+      </div>
+
+      {/* Contenu principal */}
+      <main className={styles.cvCreationMain}>
+        <div className={styles.cvCreationLayout}>
+
+          {/* Section formulaire */}
+          <section className={styles.cvCreationFormSection}>
+            <div className={styles.cvCreationFormContainer}>
+
+              {/* En-tête du formulaire */}
+              <div className={styles.cvCreationFormHeader}>
+                <h1 className={styles.cvCreationFormTitle}>
+                  Création de votre CV
+                </h1>
+                <p className={styles.cvCreationFormDescription}>
+                  Remplissez soigneusement chaque section. Tous les champs marqués d'un <span className={styles.cvCreationRequired}>*</span> sont obligatoires.
+                </p>
+
+                {/* Statistiques rapides */}
+                <div className={styles.cvCreationFormStats}>
+                  <div className={styles.cvCreationStatItem}>
+                    <span className={styles.cvCreationStatNumber}>
+                      {cvData?.experiences?.length || 0}
+                    </span>
+                    <span className={styles.cvCreationStatLabel}>Expériences</span>
+                  </div>
+                  <div className={styles.cvCreationStatItem}>
+                    <span className={styles.cvCreationStatNumber}>
+                      {cvData?.education?.length || 0}
+                    </span>
+                    <span className={styles.cvCreationStatLabel}>Formations</span>
+                  </div>
+                  <div className={styles.cvCreationStatItem}>
+                    <span className={styles.cvCreationStatNumber}>
+                      {cvData?.skills?.length || 0}
+                    </span>
+                    <span className={styles.cvCreationStatLabel}>Compétences</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Formulaire principal */}
+              <div className={styles.cvCreationFormContent}>
+                <CVForm
+                  cvData={cvData}
+                  onDataChange={handleCvDataChange}
+                />
+              </div>
+
+              {/* Actions du formulaire */}
+              <div className={styles.cvCreationFormActions}>
+                <button
+                  className={styles.cvCreationPreviewButton}
+                  onClick={() => setShowPreviewModal(true)}
+                  type="button"
+                >
+                  <FaEye />
+                  Aperçu du CV
+                </button>
+
+                <button
+                  className={styles.cvCreationDownloadButton}
+                  onClick={handleFinalDownload}
+                  disabled={!cvData.personalInfo.firstName}
+                  type="button"
+                >
+                  <FaDownload />
+                  Générer le PDF
+                </button>
+              </div>
+
+            </div>
+          </section>
+
         </div>
       </main>
 
-      {/* Download Modal/Overlay */}
+      {/* Bouton d'aperçu flottant pour mobile */}
+      <button
+        className={styles.cvCreationFloatingPreview}
+        onClick={() => setShowPreviewModal(true)}
+        type="button"
+        aria-label="Aperçu du CV"
+      >
+        <FaEye />
+      </button>
+
+      {/* Modal d'aperçu avancé */}
       <AnimatePresence>
-        {isDownloading && (
+        {showPreviewModal && (
           <motion.div
-            className={styles.downloadOverlay}
+            className={styles.cvCreationPreviewOverlay}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            onClick={() => setShowPreviewModal(false)}
           >
             <motion.div
-              className={styles.downloadModal}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
+              className={styles.cvCreationPreviewModal}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                className={styles.loadingSpinner}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <div className={styles.spinnerRing}></div>
-                <div className={styles.spinnerCore}></div>
-              </motion.div>
-              <motion.h3
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                Traitement de votre paiement...
-              </motion.h3>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-              >
-                Veuillez patienter pendant que nous préparons votre CV professionnel.
-              </motion.p>
-              <motion.div
-                className={styles.progressBar}
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 3, ease: "easeInOut" }}
-              />
+
+              {/* En-tête du modal d'aperçu */}
+              <div className={styles.cvCreationPreviewHeader}>
+                <div className={styles.cvCreationPreviewTitleSection}>
+                  <h2 className={styles.cvCreationPreviewTitle}>
+                    Aperçu en temps réel
+                  </h2>
+                  <div className={styles.cvCreationPreviewTemplateInfo}>
+                    Template: <strong>{selectedTemplate}</strong>
+                  </div>
+                </div>
+
+                <div className={styles.cvCreationPreviewControls}>
+
+                  {/* Sélecteur de mode de visualisation */}
+                  <div className={styles.cvCreationViewModeSelector}>
+                    <button
+                      className={`${styles.cvCreationViewModeButton} ${previewViewMode === 'desktop' ? styles.cvCreationViewModeActive : ''}`}
+                      onClick={() => setPreviewViewMode('desktop')}
+                      type="button"
+                    >
+                      Desktop
+                    </button>
+                    <button
+                      className={`${styles.cvCreationViewModeButton} ${previewViewMode === 'mobile' ? styles.cvCreationViewModeActive : ''}`}
+                      onClick={() => setPreviewViewMode('mobile')}
+                      type="button"
+                    >
+                      Mobile
+                    </button>
+                    <button
+                      className={`${styles.cvCreationViewModeButton} ${previewViewMode === 'print' ? styles.cvCreationViewModeActive : ''}`}
+                      onClick={() => setPreviewViewMode('print')}
+                      type="button"
+                    >
+                      Print
+                    </button>
+                  </div>
+
+                  {/* Actions du modal */}
+                  <div className={styles.cvCreationPreviewActions}>
+                    <button
+                      className={styles.cvCreationPreviewClose}
+                      onClick={() => setShowPreviewModal(false)}
+                      type="button"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contenu du modal d'aperçu */}
+              <div className={styles.cvCreationPreviewContent}>
+
+                {/* Zone d'affichage du CV */}
+                <div className={`${styles.cvCreationPreviewDisplay} ${styles[`cvCreationPreviewDisplay${previewViewMode}`]}`}>
+                  <div className={styles.cvCreationPreviewFrame}>
+                    <CVPreview
+                      cvData={cvData}
+                      template={selectedTemplate}
+                      mode={previewViewMode}
+                    />
+                  </div>
+                </div>
+
+                {/* Panneau latéral informatif */}
+                <div className={styles.cvCreationPreviewSidebar}>
+
+                  {/* Informations du template */}
+                  <div className={styles.cvCreationPreviewInfoSection}>
+                    <h3 className={styles.cvCreationPreviewInfoTitle}>
+                      Détails du template
+                    </h3>
+                    <div className={styles.cvCreationPreviewDetails}>
+                      <div className={styles.cvCreationPreviewDetailItem}>
+                        <span className={styles.cvCreationPreviewDetailLabel}>Nom:</span>
+                        <span className={styles.cvCreationPreviewDetailValue}>
+                          {selectedTemplate}
+                        </span>
+                      </div>
+                      <div className={styles.cvCreationPreviewDetailItem}>
+                        <span className={styles.cvCreationPreviewDetailLabel}>Format:</span>
+                        <span className={styles.cvCreationPreviewDetailValue}>
+                          PDF A4 Professionnel
+                        </span>
+                      </div>
+                      <div className={styles.cvCreationPreviewDetailItem}>
+                        <span className={styles.cvCreationPreviewDetailLabel}>Prix:</span>
+                        <span className={styles.cvCreationPreviewDetailValue + ' ' + styles.cvCreationPreviewPrice}>
+                          500 FCFA
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Conseils de validation */}
+                  <div className={styles.cvCreationPreviewTipsSection}>
+                    <h3 className={styles.cvCreationPreviewTipsTitle}>
+                      Checklist de validation
+                    </h3>
+                    <ul className={styles.cvCreationPreviewTipsList}>
+                      <li className={cvData.personalInfo.firstName ? styles.cvCreationPreviewTipValid : styles.cvCreationPreviewTipInvalid}>
+                        {cvData.personalInfo.firstName ? '✓' : '○'} Informations personnelles
+                      </li>
+                      <li className={cvData.summary ? styles.cvCreationPreviewTipValid : styles.cvCreationPreviewTipInvalid}>
+                        {cvData.summary ? '✓' : '○'} Résumé professionnel
+                      </li>
+                      <li className={(cvData?.experiences?.length || 0) > 0 ? styles.cvCreationPreviewTipValid : styles.cvCreationPreviewTipInvalid}>
+                        {(cvData?.experiences?.length || 0) > 0 ? '✓' : '○'} Au moins une expérience
+                      </li>
+                      <li className={(cvData?.skills?.length || 0) > 0 ? styles.cvCreationPreviewTipValid : styles.cvCreationPreviewTipInvalid}>
+                        {(cvData?.skills?.length || 0) > 0 ? '✓' : '○'} Compétences techniques
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Appel à l'action */}
+                  <button
+                    className={styles.cvCreationPreviewDownloadCta}
+                    onClick={() => {
+                      setShowPreviewModal(false);
+                      handleFinalDownload();
+                    }}
+                    disabled={!cvData.personalInfo.firstName}
+                    type="button"
+                  >
+                    <FaDownload />
+                    Télécharger ce CV
+                  </button>
+
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+
+      {/* Modal de confirmation de paiement */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <div className={styles.cvCreationPaymentOverlay}>
+            <div className={styles.cvCreationPaymentModal}>
+
+              <div className={styles.cvCreationPaymentHeader}>
+                <h2 className={styles.cvCreationPaymentTitle}>
+                  Confirmation de téléchargement
+                </h2>
+                <button
+                  className={styles.cvCreationPaymentClose}
+                  onClick={() => setShowPaymentModal(false)}
+                  type="button"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              <div className={styles.cvCreationPaymentContent}>
+                <div className={styles.cvCreationPaymentSummary}>
+                  <h3 className={styles.cvCreationPaymentSummaryTitle}>
+                    Récapitulatif de commande
+                  </h3>
+                  <div className={styles.cvCreationPaymentDetails}>
+                    <div className={styles.cvCreationPaymentDetailRow}>
+                      <span>Template sélectionné:</span>
+                      <span>{selectedTemplate}</span>
+                    </div>
+                    <div className={styles.cvCreationPaymentDetailRow}>
+                      <span>Format de sortie:</span>
+                      <span>PDF Haute Qualité</span>
+                    </div>
+                    <div className={styles.cvCreationPaymentDetailRow}>
+                      <span>Utilisations:</span>
+                      <span>Illimitées</span>
+                    </div>
+                    <div className={styles.cvCreationPaymentTotalRow}>
+                      <span>Total à payer:</span>
+                      <span className={styles.cvCreationPaymentTotalAmount}>
+                        500 FCFA
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.cvCreationPaymentSecurity}>
+                  <FaShieldAlt />
+                  <span>Paiement 100% sécurisé</span>
+                </div>
+              </div>
+
+              <div className={styles.cvCreationPaymentActions}>
+                <button
+                  className={styles.cvCreationPaymentCancel}
+                  onClick={() => setShowPaymentModal(false)}
+                  type="button"
+                >
+                  Continuer l'édition
+                </button>
+                <button
+                  className={styles.cvCreationPaymentConfirm}
+                  onClick={processPaymentAndDownload}
+                  type="button"
+                >
+                  <FaCreditCard />
+                  Payer et Télécharger
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Overlay de traitement */}
+      {isProcessing && (
+        <div className={styles.cvCreationProcessingOverlay}>
+          <div className={styles.cvCreationProcessingModal}>
+            <div className={styles.cvCreationProcessingSpinner}></div>
+            <h3 className={styles.cvCreationProcessingTitle}>
+              Génération en cours
+            </h3>
+            <p className={styles.cvCreationProcessingMessage}>
+              Préparation de votre CV professionnel...
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

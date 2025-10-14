@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
+import AuthGuard from './components/AuthGuard';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
 import TemplateSelectionPage from './pages/TemplateSelectionPage';
 import CVCreationPage from './pages/CVCreationPage';
 import LoadingOrbit from './components/LoadingOrbit';
@@ -37,8 +39,23 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/templates" element={<TemplateSelectionPage />} />
-            <Route path="/create-cv" element={<CVCreationPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/templates"
+              element={
+                <AuthGuard>
+                  <TemplateSelectionPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/create-cv"
+              element={
+                <AuthGuard>
+                  <CVCreationPage />
+                </AuthGuard>
+              }
+            />
           </Routes>
 
           {isLoading && (

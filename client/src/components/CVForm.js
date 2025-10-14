@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import apiService from '../services/api';
+import { FaUser, FaCheck, FaTimes } from 'react-icons/fa';
 
 const CVForm = ({ onDataChange }) => {
   const { currentUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [cvId, setCvId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showPrefillModal, setShowPrefillModal] = useState(false);
   const [cvData, setCvData] = useState({
     personalInfo: {
       firstName: '',
@@ -17,7 +19,7 @@ const CVForm = ({ onDataChange }) => {
       linkedin: '',
       website: ''
     },
-    experience: [],
+    experiences: [],
     education: [],
     skills: [],
     summary: ''
@@ -71,6 +73,20 @@ const CVForm = ({ onDataChange }) => {
     }));
   };
 
+  const handlePrefillAccept = () => {
+    updateCvData('personalInfo', {
+      ...cvData.personalInfo,
+      email: currentUser.email || '',
+      firstName: currentUser.displayName?.split(' ')[0] || '',
+      lastName: currentUser.displayName?.split(' ').slice(1).join(' ') || ''
+    });
+    setShowPrefillModal(false);
+  };
+
+  const handlePrefillDecline = () => {
+    setShowPrefillModal(false);
+  };
+
   const nextStep = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
@@ -86,51 +102,93 @@ const CVForm = ({ onDataChange }) => {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <div className="cv-form">
-      <div className="step-indicator">
-        {steps.map((step, index) => (
-          <div
-            key={step.id}
-            className={`step ${currentStep === step.id ? 'active' : currentStep > step.id ? 'completed' : ''}`}
-          >
-            <span className="step-number">{step.id}</span>
-            <span className="step-title">{step.title}</span>
+    <>
+      {/* Prefill Modal */}
+      {showPrefillModal && (
+        <div className="prefill-modal-overlay">
+          <div className="prefill-modal">
+            <div className="prefill-modal-header">
+              <FaUser className="prefill-icon" />
+              <h3>Pré-remplir avec vos données Google</h3>
+            </div>
+            <div className="prefill-modal-content">
+              <p>Nous avons détecté vos informations de connexion Google. Souhaitez-vous pré-remplir automatiquement les champs suivants ?</p>
+              <div className="prefill-info">
+                <div className="prefill-item">
+                  <span className="prefill-label">Email:</span>
+                  <span className="prefill-value">{currentUser?.email}</span>
+                </div>
+                <div className="prefill-item">
+                  <span className="prefill-label">Nom complet:</span>
+                  <span className="prefill-value">{currentUser?.displayName}</span>
+                </div>
+              </div>
+              <p className="prefill-note">
+                Vous pourrez modifier ces informations à tout moment.
+              </p>
+            </div>
+            <div className="prefill-modal-actions">
+              <button onClick={handlePrefillDecline} className="prefill-btn decline">
+                <FaTimes />
+                Non merci
+              </button>
+              <button onClick={handlePrefillAccept} className="prefill-btn accept">
+                <FaCheck />
+                Pré-remplir
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-      <div className="step-content">
-        <CurrentStepComponent
-          data={cvData}
-          updateData={updateCvData}
-          currentUser={currentUser}
-        />
-      </div>
+      <div className="cv-form">
+        <div className="step-indicator">
+          {steps.map((step, index) => (
+            <div
+              key={step.id}
+              className={`step ${currentStep === step.id ? 'active' : currentStep > step.id ? 'completed' : ''}`}
+            >
+              <span className="step-number">{step.id}</span>
+              <span className="step-title">{step.title}</span>
+            </div>
+          ))}
+        </div>
 
-      <div className="step-navigation">
-        {isSaving && <span className="saving-indicator">Sauvegarde en cours...</span>}
-        {currentStep > 1 && (
-          <button onClick={prevStep} className="btn-secondary">
-            Précédent
-          </button>
-        )}
-        {currentStep < steps.length && (
-          <button onClick={nextStep} className="btn-primary">
-            Suivant
-          </button>
-        )}
-        {currentStep === steps.length && (
-          <button className="btn-primary" onClick={() => onDataChange(cvData, 'download')}>
-            Télécharger PDF (500 FCFA)
-          </button>
-        )}
+        <div className="step-content">
+          <CurrentStepComponent
+            data={cvData}
+            updateData={updateCvData}
+            currentUser={currentUser}
+          />
+        </div>
+
+        <div className="step-navigation">
+          {isSaving && <span className="saving-indicator">Sauvegarde en cours...</span>}
+          {currentStep > 1 && (
+            <button onClick={prevStep} className="btn-secondary">
+              Précédent
+            </button>
+          )}
+          {currentStep < steps.length && (
+            <button onClick={nextStep} className="btn-primary">
+              Suivant
+            </button>
+          )}
+          {currentStep === steps.length && (
+            <button className="btn-primary" onClick={() => onDataChange(cvData, 'download')}>
+              Télécharger PDF (500 FCFA)
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
 // Step Components
 const PersonalInfoStep = ({ data, updateData, currentUser }) => {
+  const [showPrefillModal, setShowPrefillModal] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateData('personalInfo', {
@@ -140,15 +198,16 @@ const PersonalInfoStep = ({ data, updateData, currentUser }) => {
   };
 
   useEffect(() => {
-    if (currentUser && !data.personalInfo.email) {
-      updateData('personalInfo', {
-        ...data.personalInfo,
-        email: currentUser.email,
-        firstName: currentUser.displayName?.split(' ')[0] || '',
-        lastName: currentUser.displayName?.split(' ').slice(1).join(' ') || ''
-      });
+    // Check if we should show prefill modal
+    const hasEmptyFields = !data.personalInfo.email && !data.personalInfo.firstName && !data.personalInfo.lastName;
+    const hasUserData = currentUser && (currentUser.email || currentUser.displayName);
+    const hasNotShownModal = !localStorage.getItem('prefillModalShown');
+
+    if (hasEmptyFields && hasUserData && hasNotShownModal && !showPrefillModal) {
+      setShowPrefillModal(true);
+      localStorage.setItem('prefillModalShown', 'true');
     }
-  }, [currentUser, data.personalInfo, updateData]);
+  }, [currentUser, data.personalInfo, showPrefillModal]);
 
   return (
     <div className="personal-info-step">
@@ -226,7 +285,7 @@ const PersonalInfoStep = ({ data, updateData, currentUser }) => {
 };
 
 const ExperienceStep = ({ data, updateData }) => {
-  const [experiences, setExperiences] = useState(data.experience || []);
+  const [experiences, setExperiences] = useState(data.experiences || []);
 
   const addExperience = () => {
     setExperiences([...experiences, {
@@ -251,7 +310,7 @@ const ExperienceStep = ({ data, updateData }) => {
   };
 
   useEffect(() => {
-    updateData('experience', experiences);
+    updateData('experiences', experiences);
   }, [experiences, updateData]);
 
   return (

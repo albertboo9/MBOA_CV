@@ -1,0 +1,273 @@
+/* Login Page Styles */
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.loginContainer {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 3rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.loginContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+/* Header */
+.loginHeader {
+  margin-bottom: 2rem;
+}
+
+.loginLogo {
+  margin-bottom: 1.5rem;
+}
+
+.loginLogoText {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #2c3e50;
+  letter-spacing: -1px;
+}
+
+.loginLogoAccent {
+  color: #667eea;
+  font-weight: 900;
+}
+
+.loginTitle {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.loginSubtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Content */
+.loginContent {
+  margin-bottom: 2rem;
+}
+
+/* Google Sign In */
+.loginGoogleSection {
+  margin-bottom: 2.5rem;
+}
+
+.loginGoogleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 24px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.loginGoogleButton:hover {
+  background: #3367d6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+}
+
+.loginGoogleButton:active {
+  transform: translateY(0);
+}
+
+.loginGoogleIcon {
+  font-size: 1.3rem;
+}
+
+.loginGoogleHelp {
+  margin-top: 0.75rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Benefits */
+.loginBenefits {
+  text-align: left;
+}
+
+.loginBenefitsTitle {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.loginBenefitsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.loginBenefitItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.loginBenefitItem:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+}
+
+.loginBenefitIcon {
+  font-size: 1.5rem;
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+.loginBenefitContent h4 {
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.loginBenefitContent p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Footer */
+.loginFooter {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+}
+
+.loginFooterText {
+  color: #6c757d;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.loginFooterLink {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.loginFooterLink:hover {
+  text-decoration: underline;
+}
+
+/* Loading */
+.loginLoading,
+.authLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.loginLoadingSpinner,
+.authLoadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loginLoading p,
+.authLoading p {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .loginContainer {
+    padding: 2rem 1.5rem;
+    margin: 10px;
+  }
+
+  .loginTitle {
+    font-size: 1.5rem;
+  }
+
+  .loginLogoText {
+    font-size: 2rem;
+  }
+
+  .loginBenefitsGrid {
+    gap: 0.75rem;
+  }
+
+  .loginBenefitItem {
+    padding: 0.75rem;
+  }
+
+  .loginGoogleButton {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginContainer {
+    padding: 1.5rem 1rem;
+  }
+
+  .loginHeader {
+    margin-bottom: 1.5rem;
+  }
+
+  .loginTitle {
+    font-size: 1.3rem;
+  }
+
+  .loginLogoText {
+    font-size: 1.8rem;
+  }
+
+  .loginBenefitsTitle {
+    font-size: 1.1rem;
+  }
+}
