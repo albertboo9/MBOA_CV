@@ -172,7 +172,7 @@
 
 .stepLabel {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6c757d;
   text-align: center;
   font-weight: 500;
 }
@@ -278,7 +278,7 @@
 }
 
 .formHeader p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #6c757d;
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
@@ -323,7 +323,7 @@
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  border-bottom: 1px solid #dee2e6;
 }
 
 .previewHeader h2 {
@@ -347,7 +347,7 @@
 
 .templateBadge:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
 .previewContent {

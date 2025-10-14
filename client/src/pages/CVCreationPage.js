@@ -105,7 +105,11 @@ const CVCreationPage = () => {
   };
 
   const handleBack = () => {
-    navigate('/templates');
+    window.showLoading && window.showLoading("Retour aux modèles...");
+    setTimeout(() => {
+      navigate('/templates');
+      window.hideLoading && window.hideLoading();
+    }, 800);
   };
 
   const togglePreview = () => {
