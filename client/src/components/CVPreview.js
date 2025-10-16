@@ -9,7 +9,18 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
     return <div className="cv-preview-placeholder">Aperçu du CV</div>;
   }
 
-  const { personalInfo, experience, education, skills, summary } = cvData;
+  // Helper functions pour les niveaux de langue
+  const getLevelLabel = (level) => {
+    const levels = ['', 'Débutant', 'Intermédiaire', 'Avancé', 'Courant', 'Langue maternelle'];
+    return levels[level] || '';
+  };
+
+  const getLevelColor = (level) => {
+    const colors = ['', '#ff4757', '#ffa500', '#3498db', '#00ff88', '#00d4ff'];
+    return colors[level] || '#ccc';
+  };
+
+  const { personalInfo, experience, education, skills, languages, hobbies, projects, customSections, summary } = cvData;
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 25, 200));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 25, 50));
@@ -153,6 +164,103 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
                 ))}
               </div>
             </section>
+          )}
+
+          {/* Languages Section */}
+          {languages && languages.length > 0 && (
+            <section className="cv-section">
+              <h2>Langues</h2>
+              {languages.map((lang, index) => (
+                <div key={lang.id || index} className="language-item">
+                  <div className="language-header">
+                    <span className="language-name">{lang.name}</span>
+                    <span className="language-level">{getLevelLabel(lang.level)}</span>
+                  </div>
+                  {lang.certification && (
+                    <div className="language-certification">{lang.certification}</div>
+                  )}
+                  <div className="language-level-bar">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div
+                        key={level}
+                        className={`level-dot ${level <= lang.level ? 'active' : ''}`}
+                        style={{
+                          background: level <= lang.level ? getLevelColor(lang.level) : '#e0e0e0',
+                          borderColor: level <= lang.level ? getLevelColor(lang.level) : '#ddd'
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {/* Projects Section */}
+          {projects && projects.length > 0 && (
+            <section className="cv-section">
+              <h2>Projets</h2>
+              {projects.map((project, index) => (
+                <div key={project.id || index} className="project-item">
+                  <h3>{project.name}</h3>
+                  {project.technologies && (
+                    <div className="project-technologies">Technologies: {project.technologies}</div>
+                  )}
+                  <div className="project-meta">
+                    <span className="project-dates">
+                      {project.startDate} - {project.current ? 'Présent' : project.endDate}
+                    </span>
+                    {project.url && (
+                      <span className="project-url">{project.url}</span>
+                    )}
+                  </div>
+                  {project.description && (
+                    <p className="project-description">{project.description}</p>
+                  )}
+                </div>
+              ))}
+            </section>
+          )}
+
+          {/* Hobbies Section */}
+          {hobbies && hobbies.length > 0 && (
+            <section className="cv-section">
+              <h2>Centres d'Intérêt</h2>
+              <div className="hobbies-list">
+                {hobbies.map((hobby, index) => (
+                  <div key={hobby.id || index} className="hobby-item">
+                    <span className="hobby-name">{hobby.name}</span>
+                    {hobby.description && (
+                      <span className="hobby-description">{hobby.description}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Custom Sections */}
+          {customSections && customSections.length > 0 && (
+            <>
+              {customSections.map((section, index) => (
+                <section key={section.id || index} className="cv-section">
+                  <h2>{section.title}</h2>
+                  {section.type === 'text' && (
+                    <p className="custom-content">{section.content}</p>
+                  )}
+                  {section.type === 'list' && (
+                    <ul className="custom-list">
+                      {section.items.map((item, itemIndex) => (
+                        <li key={itemIndex}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {section.type === 'description' && (
+                    <div className="custom-description">{section.content}</div>
+                  )}
+                </section>
+              ))}
+            </>
           )}
         </div>
       </div>

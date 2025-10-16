@@ -3,12 +3,44 @@ import { useAuth } from '../AuthContext';
 import apiService from '../services/api';
 import { FaUser, FaCheck, FaTimes } from 'react-icons/fa';
 
+// Debug function to test all sections
+const testAllSections = () => {
+  console.log('=== TESTING ALL CV SECTIONS ===');
+
+  const testData = {
+    personalInfo: { firstName: 'Test', lastName: 'User' },
+    experiences: [{ id: 1, position: 'Test Position' }],
+    education: [{ id: 1, degree: 'Test Degree' }],
+    skills: ['Test Skill'],
+    languages: [
+      { id: 1, name: 'Français', level: 5, certification: 'DELF' },
+      { id: 2, name: 'Anglais', level: 3, certification: 'TOEIC' }
+    ],
+    hobbies: [
+      { id: 1, name: 'Lecture', description: 'Romans et littérature' },
+      { id: 2, name: 'Sport', description: 'Football et natation' }
+    ],
+    projects: [
+      { id: 1, name: 'Projet Test', technologies: 'React, Node.js', current: true }
+    ],
+    customSections: [
+      { id: 1, title: 'Certifications', type: 'list', items: ['Cert 1', 'Cert 2'] }
+    ],
+    summary: 'Résumé de test'
+  };
+
+  console.log('Test data structure:', testData);
+  return testData;
+};
+
 const CVForm = ({ onDataChange }) => {
   const { currentUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [cvId, setCvId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showPrefillModal, setShowPrefillModal] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   const [cvData, setCvData] = useState({
     personalInfo: {
       firstName: '',
@@ -43,26 +75,39 @@ const CVForm = ({ onDataChange }) => {
 
   useEffect(() => {
     // Load from localStorage on mount
-    const savedData = localStorage.getItem('cvData');
-    if (savedData) {
-      setCvData(JSON.parse(savedData));
+    try {
+      const savedData = localStorage.getItem('cvData');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        console.log('Loaded data from localStorage:', parsedData);
+        setCvData(prev => ({ ...prev, ...parsedData }));
+      } else {
+        console.log('No saved data found, using default structure');
+      }
+    } catch (error) {
+      console.error('Error loading CV data from localStorage:', error);
     }
+
+    // Test functions - remove in production
+    window.testCVSections = testAllSections;
+    window.testLanguageLevels = testLanguageLevels;
   }, []);
 
   useEffect(() => {
     // Auto-save to localStorage
-    localStorage.setItem('cvData', JSON.stringify(cvData));
-    onDataChange && onDataChange(cvData);
+    try {
+      localStorage.setItem('cvData', JSON.stringify(cvData));
+      onDataChange && onDataChange(cvData);
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
 
     // Auto-save to server (debounced)
     const timeoutId = setTimeout(async () => {
-      if (currentUser) {
+      if (currentUser && cvId) {
         try {
           setIsSaving(true);
-          const result = await apiService.saveCV(cvData, cvId);
-          if (result.cvId && !cvId) {
-            setCvId(result.cvId);
-          }
+          await apiService.saveCV(cvData, cvId);
         } catch (error) {
           console.error('Auto-save failed:', error);
         } finally {
@@ -75,10 +120,15 @@ const CVForm = ({ onDataChange }) => {
   }, [cvData, onDataChange, currentUser, cvId]);
 
   const updateCvData = (section, data) => {
-    setCvData(prev => ({
-      ...prev,
-      [section]: data
-    }));
+    console.log(`Updating section ${section}:`, data);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        [section]: data
+      };
+      console.log('New CV data:', newData);
+      return newData;
+    });
   };
 
   const handlePrefillAccept = () => {
@@ -95,6 +145,18 @@ const CVForm = ({ onDataChange }) => {
     setShowPrefillModal(false);
   };
 
+  const handleUnsavedConfirm = () => {
+    setShowUnsavedModal(false);
+    if (pendingNavigation) {
+      window.location.href = pendingNavigation;
+    }
+  };
+
+  const handleUnsavedCancel = () => {
+    setShowUnsavedModal(false);
+    setPendingNavigation(null);
+  };
+
   const nextStep = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
@@ -105,6 +167,30 @@ const CVForm = ({ onDataChange }) => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleNavigation = (targetPath) => {
+    // Vérifier s'il y a des données non sauvegardées
+    const hasUnsavedData = cvData && (
+      cvData.personalInfo.firstName || cvData.personalInfo.lastName ||
+      (cvData.experiences && cvData.experiences.length > 0) ||
+      (cvData.education && cvData.education.length > 0) ||
+      (cvData.skills && cvData.skills.length > 0) ||
+      (cvData.languages && cvData.languages.length > 0) ||
+      (cvData.hobbies && cvData.hobbies.length > 0) ||
+      (cvData.projects && cvData.projects.length > 0) ||
+      (cvData.customSections && cvData.customSections.length > 0) ||
+      cvData.summary
+    );
+
+    if (hasUnsavedData && !cvId) {
+      setShowUnsavedModal(true);
+      setPendingNavigation(targetPath);
+      return;
+    }
+
+    // Naviguer directement si pas de données non sauvegardées
+    window.location.href = targetPath;
   };
 
   const CurrentStepComponent = steps[currentStep - 1].component;
@@ -143,6 +229,34 @@ const CVForm = ({ onDataChange }) => {
               <button onClick={handlePrefillAccept} className="prefill-btn accept">
                 <FaCheck />
                 Pré-remplir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de données non sauvegardées */}
+      {showUnsavedModal && (
+        <div className="unsaved-modal-overlay">
+          <div className="unsaved-modal">
+            <div className="unsaved-modal-header">
+              <div className="unsaved-icon">⚠️</div>
+              <h3>Données non sauvegardées</h3>
+            </div>
+            <div className="unsaved-modal-content">
+              <p>Vous avez des données non sauvegardées qui seront perdues si vous quittez cette page.</p>
+              <p className="unsaved-warning">
+                Voulez-vous vraiment continuer sans sauvegarder ?
+              </p>
+            </div>
+            <div className="unsaved-modal-actions">
+              <button onClick={handleUnsavedCancel} className="unsaved-btn cancel">
+                <FaTimes />
+                Rester et sauvegarder
+              </button>
+              <button onClick={handleUnsavedConfirm} className="unsaved-btn confirm">
+                <FaCheck />
+                Continuer sans sauvegarder
               </button>
             </div>
           </div>
@@ -581,9 +695,19 @@ const LanguagesStep = ({ data, updateData }) => {
   };
 
   const updateLanguage = (id, field, value) => {
+    console.log(`Updating language ${id}, field ${field} with value:`, value);
     setLanguages(languages.map(lang =>
       lang.id === id ? { ...lang, [field]: value } : lang
     ));
+  };
+
+  // Fonction de test pour vérifier les niveaux
+  const testLanguageLevels = () => {
+    console.log('=== TEST DES NIVEAUX DE LANGUES ===');
+    const testLang = { id: 999, name: 'Test Language', level: 3 };
+    console.log('Test language object:', testLang);
+    console.log('Level label:', getLevelLabel(testLang.level));
+    console.log('Level color:', getLevelColor(testLang.level));
   };
 
   const removeLanguage = (id) => {
@@ -591,6 +715,7 @@ const LanguagesStep = ({ data, updateData }) => {
   };
 
   useEffect(() => {
+    console.log('Languages updated:', languages);
     updateData('languages', languages);
   }, [languages, updateData]);
 
@@ -651,9 +776,7 @@ const LanguagesStep = ({ data, updateData }) => {
                 <div
                   key={level}
                   className={`level-segment ${level <= lang.level ? 'active' : ''}`}
-                  style={{
-                    background: level <= lang.level ? getLevelColor(lang.level) : '#e0e0e0'
-                  }}
+                  data-lang-level={lang.level}
                 />
               ))}
             </div>

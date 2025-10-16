@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import TemplateSelectionPage from './pages/TemplateSelectionPage';
 import CVCreationPage from './pages/CVCreationPage';
 import LoadingOrbit from './components/LoadingOrbit';
+import { FaPalette } from 'react-icons/fa';
 import './App.css';
 
 function App() {
@@ -22,16 +23,55 @@ function App() {
     setIsLoading(false);
   };
 
+  const handleTemplatesNavigation = () => {
+    window.navigateWithUnsavedCheck('/templates');
+  };
+
   // Global loading context
   useEffect(() => {
     window.showLoading = showLoading;
     window.hideLoading = hideLoading;
+    window.navigateWithUnsavedCheck = (targetPath) => {
+      try {
+        const savedData = localStorage.getItem('cvData');
+        if (savedData) {
+          const cvData = JSON.parse(savedData);
+          const hasUnsavedData = cvData && (
+            cvData.personalInfo?.firstName || cvData.personalInfo?.lastName ||
+            (cvData.experiences && cvData.experiences.length > 0) ||
+            (cvData.education && cvData.education.length > 0) ||
+            (cvData.skills && cvData.skills.length > 0) ||
+            (cvData.languages && cvData.languages.length > 0) ||
+            (cvData.hobbies && cvData.hobbies.length > 0) ||
+            (cvData.projects && cvData.projects.length > 0) ||
+            (cvData.customSections && cvData.customSections.length > 0) ||
+            cvData.summary
+          );
+
+          if (hasUnsavedData) {
+            const confirmed = window.confirm(
+              "Vous avez des données non sauvegardées qui seront perdues. Voulez-vous continuer ?"
+            );
+            if (confirmed) {
+              window.location.href = targetPath;
+            }
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking unsaved data:', error);
+      }
+      window.location.href = targetPath;
+    };
 
     return () => {
       delete window.showLoading;
       delete window.hideLoading;
+      delete window.navigateWithUnsavedCheck;
     };
   }, []);
+
+  // Nettoyer les fonctions dupliquées
 
   return (
     <AuthProvider>

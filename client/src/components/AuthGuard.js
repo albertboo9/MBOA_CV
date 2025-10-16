@@ -9,8 +9,15 @@ const AuthGuard = ({ children }) => {
   if (loading) {
     return (
       <div className="auth-loading">
-        <div className="auth-loading-spinner"></div>
-        <p>Vérification de l'authentification...</p>
+        <div className="cyber-loader">
+          <div className="orbital-ring">
+            <div className="orbital-dot"></div>
+          </div>
+          <div className="loader-text">
+            <span className="loader-main">Easy-CV</span>
+            <span className="loader-sub">Chargement sécurisé...</span>
+          </div>
+        </div>
       </div>
     );
   }
