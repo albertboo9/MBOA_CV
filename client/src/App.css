@@ -1092,6 +1092,34 @@ body {
   color: #333;
 }
 
+/* Preview Download Section */
+.preview-download-section {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  text-align: center;
+}
+
+.btn-download-preview {
+  background: linear-gradient(135deg, #00d4ff, #00ff88);
+  color: #000;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-download-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 212, 255, 0.4);
+}
+
 /* Placeholder de prévisualisation vide */
 .cv-preview-placeholder {
   width: 100%;

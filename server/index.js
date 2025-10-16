@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const admin = require('firebase-admin');
 const pdfGenerator = require('./services/pdfGenerator');
+const paymentService = require('./services/paymentService');
 
 // Initialize Firebase Admin SDK
 // Note: You'll need to add your service account key
@@ -102,91 +103,75 @@ app.get('/api/cv/:cvId', authenticate, async (req, res) => {
   }
 });
 
-// Payment initiation route (mock implementation)
+// Payment initiation route
 app.post('/api/payment/initiate', authenticate, async (req, res) => {
   try {
-    const { cvId, amount = 500 } = req.body; // 500 FCFA default
+    const { cvId, amount = 500 } = req.body;
     const userId = req.user.uid;
 
-    // Update CV status to payment pending
-    await admin.firestore().collection('cvs').doc(cvId).update({
-      status: 'payment_pending',
-      paymentAmount: amount,
-      paymentInitiatedAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+    const paymentData = await paymentService.initiatePayment(cvId, userId, amount);
 
-    // Create payment record
-    const paymentRef = admin.firestore().collection('payments').doc();
-    await paymentRef.set({
-      cvId,
-      userId,
-      amount,
-      status: 'pending',
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Mock payment URL - in production, this would be from the payment aggregator
-    const paymentUrl = `https://payment.example.com/pay?paymentId=${paymentRef.id}&amount=${amount}`;
-
-    res.json({
-      paymentId: paymentRef.id,
-      paymentUrl,
-      amount
-    });
+    res.json(paymentData);
   } catch (error) {
     console.error('Payment initiation error:', error);
-    res.status(500).json({ error: 'Failed to initiate payment' });
+    res.status(500).json({ error: error.message || 'Failed to initiate payment' });
   }
 });
 
-// Webhook route for payment confirmation (mock implementation)
-app.post('/api/payment/webhook', async (req, res) => {
+// Payment processing simulation route
+app.post('/api/payment/process/:paymentId', authenticate, async (req, res) => {
   try {
-    const { paymentId, status, transactionId } = req.body;
+    const { paymentId } = req.params;
+    const { success = true } = req.body; // Par défaut succès pour simulation
 
-    // In production, verify webhook signature here
-    // const isValidSignature = verifyWebhookSignature(req.headers, req.body);
+    const result = await paymentService.processPayment(paymentId, success);
 
-    if (status === 'success') {
-      // Update payment status
-      await admin.firestore().collection('payments').doc(paymentId).update({
-        status: 'completed',
-        transactionId,
-        completedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Get payment details to update CV
-      const paymentDoc = await admin.firestore().collection('payments').doc(paymentId).get();
-      const paymentData = paymentDoc.data();
-
-      // Update CV status to paid
-      await admin.firestore().collection('cvs').doc(paymentData.cvId).update({
-        status: 'paid',
-        paidAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      res.json({ received: true, status: 'payment_confirmed' });
-    } else {
-      // Handle failed payment
-      await admin.firestore().collection('payments').doc(paymentId).update({
-        status: 'failed',
-        failedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      res.json({ received: true, status: 'payment_failed' });
-    }
+    res.json(result);
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    console.error('Payment processing error:', error);
+    res.status(500).json({ error: error.message || 'Payment processing failed' });
   }
 });
 
-// Download route
+// Validate download code route
+app.post('/api/download/validate-code', authenticate, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const userId = req.user.uid;
+
+    if (!code) {
+      return res.status(400).json({ error: 'Download code is required' });
+    }
+
+    const result = await paymentService.validateDownloadCode(code, userId);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Download code validation error:', error);
+    res.status(400).json({ error: error.message || 'Invalid download code' });
+  }
+});
+
+// Get user download codes route
+app.get('/api/user/download-codes', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.uid;
+
+    const codes = await paymentService.getUserDownloadCodes(userId);
+
+    res.json({ downloadCodes: codes });
+  } catch (error) {
+    console.error('Get user download codes error:', error);
+    res.status(500).json({ error: 'Failed to retrieve download codes' });
+  }
+});
+
+// Download route (with payment validation)
 app.get('/api/cv/:cvId/download', authenticate, async (req, res) => {
   try {
     const { cvId } = req.params;
     const userId = req.user.uid;
-    const { template = 'modern' } = req.query;
+    const { template = 'modern', code } = req.query;
 
     // Get CV data
     const cvDoc = await admin.firestore().collection('cvs').doc(cvId).get();
@@ -201,8 +186,20 @@ app.get('/api/cv/:cvId/download', authenticate, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    if (cvData.status !== 'paid') {
-      return res.status(403).json({ error: 'Payment required' });
+    // Vérifier l'accès (paiement ou code valide)
+    let hasAccess = cvData.status === 'paid';
+
+    if (!hasAccess && code) {
+      try {
+        await paymentService.validateDownloadCode(code, userId);
+        hasAccess = true;
+      } catch (error) {
+        return res.status(403).json({ error: 'Invalid or expired download code' });
+      }
+    }
+
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Payment required or valid download code needed' });
     }
 
     // Generate PDF

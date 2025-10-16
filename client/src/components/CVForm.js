@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
+import { useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
+import PaymentModal from './PaymentModal';
 import { FaUser, FaCheck, FaTimes } from 'react-icons/fa';
 
 // Debug function to test all sections
@@ -35,12 +37,15 @@ const testAllSections = () => {
 
 const CVForm = ({ onDataChange }) => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [cvId, setCvId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showPrefillModal, setShowPrefillModal] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [cvData, setCvData] = useState({
     personalInfo: {
       firstName: '',
@@ -185,6 +190,48 @@ const CVForm = ({ onDataChange }) => {
     }
   };
 
+  const handlePayment = async (cvData) => {
+    try {
+      setIsSaving(true);
+
+      // Sauvegarder d'abord le CV
+      const saveResult = await apiService.saveCV(cvData, cvId);
+      const finalCvId = saveResult.cvId;
+
+      // Initier le paiement
+      const paymentResult = await apiService.initiatePayment(finalCvId, 1250);
+
+      // Rediriger vers la page de traitement du paiement
+      window.location.href = paymentResult.paymentUrl;
+    } catch (error) {
+      console.error('Erreur lors de l\'initiation du paiement:', error);
+      alert('Erreur lors de l\'initiation du paiement. Veuillez réessayer.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePaymentConfirm = async (data) => {
+    try {
+      setIsPaymentProcessing(true);
+      setShowPaymentModal(false);
+
+      // Initier le paiement
+      const paymentResult = await apiService.initiatePayment(cvId || null, 1250);
+
+      // Rediriger vers la page de traitement
+      navigate(`/payment/process/${paymentResult.paymentId}`);
+    } catch (error) {
+      console.error('Erreur lors de l\'initiation du paiement:', error);
+      alert('Erreur lors de l\'initiation du paiement. Veuillez réessayer.');
+      setIsPaymentProcessing(false);
+    }
+  };
+
+  const handlePaymentModalClose = () => {
+    setShowPaymentModal(false);
+  };
+
   const nextStep = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
@@ -225,6 +272,15 @@ const CVForm = ({ onDataChange }) => {
 
   return (
     <>
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={handlePaymentModalClose}
+        onConfirm={handlePaymentConfirm}
+        cvData={cvData}
+        isProcessing={isPaymentProcessing}
+      />
+
       {/* Prefill Modal */}
       {showPrefillModal && (
         <div className="prefill-modal-overlay">
@@ -360,9 +416,14 @@ const CVForm = ({ onDataChange }) => {
             </button>
           )}
           {currentStep === steps.length && (
-            <button className="btn-primary" onClick={() => onDataChange(cvData, 'download')}>
-              Télécharger PDF (500 FCFA)
-            </button>
+            <div className="final-actions">
+              <button className="btn-primary" onClick={() => setShowPaymentModal(true)}>
+                Générer le CV (1250 FCFA)
+              </button>
+              <button className="btn-secondary" onClick={() => onDataChange(cvData, 'preview')}>
+                Aperçu Gratuit
+              </button>
+            </div>
           )}
         </div>
       </div>

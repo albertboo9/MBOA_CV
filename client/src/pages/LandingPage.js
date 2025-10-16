@@ -5,11 +5,11 @@ import { useTypewriter, Cursor } from "react-simple-typewriter";
 import styles from "./LandingPage.module.css";
 
 // Icônes professionnelles de React Icons
-import { 
-  FaRocket, 
-  FaBolt, 
-  FaMagic, 
-  FaFileExport, 
+import {
+  FaRocket,
+  FaBolt,
+  FaMagic,
+  FaFileExport,
   FaTachometerAlt,
   FaBullseye,
   FaGem,
@@ -18,7 +18,8 @@ import {
   FaBriefcase,
   FaArrowRight,
   FaChevronDown,
-  FaTimes
+  FaTimes,
+  FaUser
 } from "react-icons/fa";
 
 import { 
@@ -297,6 +298,20 @@ const LandingPage = () => {
                 </AnimatePresence>
               </motion.button>
             ))}
+
+            {/* User Dashboard Link */}
+            <motion.button
+              onClick={() => navigate('/dashboard')}
+              className={styles.navLink}
+              whileHover={{
+                scale: 1.1,
+                textShadow: "0 0 20px var(--neon-purple)",
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaUser style={{ marginRight: '5px' }} />
+              Mon Espace
+            </motion.button>
 
             <motion.button
               className={styles.navCta}

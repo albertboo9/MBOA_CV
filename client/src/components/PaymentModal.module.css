@@ -1,0 +1,397 @@
+/* Payment Modal Styles */
+.paymentModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.paymentModal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.paymentModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.paymentModalIcon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.paymentModalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.paymentModalClose {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.paymentModalClose:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.paymentModalClose:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content */
+.paymentModalContent {
+  padding: 0 2rem 2rem;
+}
+
+/* Order Summary */
+.paymentOrderSummary {
+  margin-bottom: 2rem;
+}
+
+.paymentOrderTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.paymentOrderDetails {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.paymentOrderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.paymentOrderItemInfo {
+  flex: 1;
+}
+
+.paymentOrderItemName {
+  font-weight: 600;
+  color: #1f2937;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.paymentOrderItemDesc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.paymentOrderItemPrice {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.paymentOrderDivider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 1rem 0;
+}
+
+.paymentOrderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.paymentOrderTotalLabel {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.paymentOrderTotalAmount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* CV Preview */
+.paymentCVPreview {
+  margin-bottom: 2rem;
+}
+
+.paymentCVPreviewTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.paymentCVPreviewCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.paymentCVPreviewHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.paymentCVPreviewAvatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-right: 1rem;
+}
+
+.paymentCVPreviewInfo {
+  flex: 1;
+}
+
+.paymentCVPreviewName {
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.paymentCVPreviewEmail {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.paymentCVPreviewStats {
+  display: flex;
+  gap: 2rem;
+}
+
+.paymentCVPreviewStat {
+  text-align: center;
+}
+
+.paymentCVPreviewStatNumber {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.paymentCVPreviewStatLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Security Notice */
+.paymentSecurityNotice {
+  display: flex;
+  align-items: flex-start;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.paymentSecurityIcon {
+  color: #059669;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  margin-top: 0.125rem;
+}
+
+.paymentSecurityContent {
+  flex: 1;
+}
+
+.paymentSecurityTitle {
+  font-weight: 600;
+  color: #065f46;
+  margin: 0 0 0.5rem 0;
+}
+
+.paymentSecurityText {
+  font-size: 0.875rem;
+  color: #047857;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Terms */
+.paymentTerms {
+  margin-bottom: 2rem;
+}
+
+.paymentTermsText {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.paymentTermsLink {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.paymentTermsLink:hover {
+  text-decoration: underline;
+}
+
+/* Actions */
+.paymentModalActions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.paymentModalCancel,
+.paymentModalConfirm {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+.paymentModalCancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.paymentModalCancel:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.paymentModalConfirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.paymentModalConfirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.paymentModalCancel:disabled,
+.paymentModalConfirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.paymentModalSpinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .paymentModal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .paymentModalHeader {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .paymentModalContent {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .paymentModalActions {
+    padding: 1rem 1.5rem 1.5rem;
+    flex-direction: column;
+  }
+
+  .paymentModalCancel,
+  .paymentModalConfirm {
+    width: 100%;
+  }
+
+  .paymentCVPreviewStats {
+    gap: 1rem;
+  }
+
+  .paymentCVPreviewStatNumber {
+    font-size: 1.25rem;
+  }
+}

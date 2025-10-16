@@ -36,25 +36,15 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
 
   return (
     <div className="cv-preview-container">
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="debug-info">
-          <details>
-            <summary>🔧 Debug Info</summary>
-            <div className="debug-content">
-              <p><strong>Personal Info:</strong> {cvData.personalInfo ? '✓' : '✗'}</p>
-              <p><strong>Experiences:</strong> {cvData.experiences?.length || 0}</p>
-              <p><strong>Education:</strong> {cvData.education?.length || 0}</p>
-              <p><strong>Skills:</strong> {cvData.skills?.length || 0}</p>
-              <p><strong>Languages:</strong> {cvData.languages?.length || 0}</p>
-              <p><strong>Hobbies:</strong> {cvData.hobbies?.length || 0}</p>
-              <p><strong>Projects:</strong> {cvData.projects?.length || 0}</p>
-              <p><strong>Custom Sections:</strong> {cvData.customSections?.length || 0}</p>
-              <p><strong>Summary:</strong> {cvData.summary ? '✓' : '✗'}</p>
-            </div>
-          </details>
-        </div>
-      )}
+      {/* Download Button */}
+      <div className="preview-download-section">
+        <button
+          className="btn-download-preview"
+          onClick={() => window.dispatchEvent(new CustomEvent('downloadCV', { detail: cvData }))}
+        >
+          Télécharger le CV (500 FCFA)
+        </button>
+      </div>
 
       {/* Preview Controls */}
       <div className="cv-preview-controls">

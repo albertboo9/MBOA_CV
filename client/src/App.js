@@ -6,6 +6,10 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import TemplateSelectionPage from './pages/TemplateSelectionPage';
 import CVCreationPage from './pages/CVCreationPage';
+import PaymentProcessingPage from './pages/PaymentProcessingPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentFailedPage from './pages/PaymentFailedPage';
+import UserDashboardPage from './pages/UserDashboardPage';
 import LoadingOrbit from './components/LoadingOrbit';
 import { FaPalette } from 'react-icons/fa';
 import './App.css';
@@ -93,6 +97,38 @@ function App() {
               element={
                 <AuthGuard>
                   <CVCreationPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/payment/process/:paymentId"
+              element={
+                <AuthGuard>
+                  <PaymentProcessingPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/payment/success"
+              element={
+                <AuthGuard>
+                  <PaymentSuccessPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/payment/failed"
+              element={
+                <AuthGuard>
+                  <PaymentFailedPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <AuthGuard>
+                  <UserDashboardPage />
                 </AuthGuard>
               }
             />

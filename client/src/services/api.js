@@ -67,10 +67,32 @@ class ApiService {
     });
   }
 
+  async processPayment(paymentId, success = true) {
+    return this.request(`/api/payment/process/${paymentId}`, {
+      method: 'POST',
+      body: JSON.stringify({ success })
+    });
+  }
+
+  // Download code operations
+  async validateDownloadCode(code) {
+    return this.request('/api/download/validate-code', {
+      method: 'POST',
+      body: JSON.stringify({ code })
+    });
+  }
+
+  async getUserDownloadCodes() {
+    return this.request('/api/user/download-codes');
+  }
+
   // Download CV
-  async downloadCV(cvId, template = 'modern') {
+  async downloadCV(cvId, template = 'modern', code = null) {
     const headers = await this.getAuthHeaders();
-    const url = `${this.baseURL}/api/cv/${cvId}/download?template=${template}`;
+    let url = `${this.baseURL}/api/cv/${cvId}/download?template=${template}`;
+    if (code) {
+      url += `&code=${code}`;
+    }
 
     const response = await fetch(url, {
       headers,

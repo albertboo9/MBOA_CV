@@ -467,7 +467,7 @@ const CVCreationPage = () => {
                       <div className={styles.cvCreationPreviewDetailItem}>
                         <span className={styles.cvCreationPreviewDetailLabel}>Prix:</span>
                         <span className={styles.cvCreationPreviewDetailValue + ' ' + styles.cvCreationPreviewPrice}>
-                          500 FCFA
+                          1250 FCFA
                         </span>
                       </div>
                     </div>
@@ -555,7 +555,7 @@ const CVCreationPage = () => {
                     <div className={styles.cvCreationPaymentTotalRow}>
                       <span>Total à payer:</span>
                       <span className={styles.cvCreationPaymentTotalAmount}>
-                        500 FCFA
+                        1250 FCFA
                       </span>
                     </div>
                   </div>

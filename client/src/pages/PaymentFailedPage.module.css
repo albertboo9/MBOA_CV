@@ -1,0 +1,247 @@
+/* Payment Failed Page Styles */
+.paymentFailedPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.paymentFailedContainer {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.paymentFailedContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #dc2626, #b91c1c, #dc2626);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Error Icon */
+.paymentFailedIcon {
+  font-size: 4rem;
+  color: #dc2626;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 8px rgba(220, 38, 38, 0.3));
+}
+
+/* Title */
+.paymentFailedTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.paymentFailedMessage {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Status Section */
+.paymentFailedStatus {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.paymentFailedStatusIcon {
+  font-size: 2rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.paymentFailedStatusText {
+  text-align: left;
+}
+
+.paymentFailedStatusText h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 0.25rem;
+}
+
+.paymentFailedStatusText p {
+  font-size: 0.875rem;
+  color: #a16207;
+  margin: 0;
+}
+
+/* Actions */
+.paymentFailedActions {
+  margin-bottom: 2rem;
+}
+
+.paymentFailedPrimaryBtn,
+.paymentFailedSecondaryBtn {
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  text-decoration: none;
+  min-width: 160px;
+}
+
+.paymentFailedPrimaryBtn {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.paymentFailedPrimaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.paymentFailedSecondaryActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.paymentFailedSecondaryBtn {
+  background: #f3f4f6;
+  color: #374151;
+  flex: 1;
+}
+
+.paymentFailedSecondaryBtn:hover {
+  background: #e5e7eb;
+}
+
+/* Help Section */
+.paymentFailedHelp {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.paymentFailedHelp h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.paymentFailedHelp ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.paymentFailedHelp li {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.paymentFailedHelp li::before {
+  content: '•';
+  color: #dc2626;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* Footer */
+.paymentFailedFooter {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+}
+
+.paymentFailedFooter p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.paymentFailedLink {
+  color: #dc2626;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.paymentFailedLink:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .paymentFailedPage {
+    padding: 1rem;
+  }
+
+  .paymentFailedContainer {
+    padding: 2rem 1.5rem;
+  }
+
+  .paymentFailedTitle {
+    font-size: 1.75rem;
+  }
+
+  .paymentFailedIcon {
+    font-size: 3rem;
+  }
+
+  .paymentFailedSecondaryActions {
+    flex-direction: column;
+  }
+
+  .paymentFailedSecondaryBtn {
+    margin-bottom: 0.5rem;
+  }
+
+  .paymentFailedStatus {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .paymentFailedStatusText {
+    text-align: center;
+  }
+}
