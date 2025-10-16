@@ -90,7 +90,20 @@ const CVForm = ({ onDataChange }) => {
 
     // Test functions - remove in production
     window.testCVSections = testAllSections;
-    window.testLanguageLevels = testLanguageLevels;
+    window.testPreview = () => {
+      console.log('=== TEST DE LA PRÉVISUALISATION ===');
+      console.log('Données actuelles du CV:', cvData);
+      console.log('Nombre de sections:');
+      console.log('- Personal Info:', cvData.personalInfo ? '✓' : '✗');
+      console.log('- Experiences:', cvData.experiences?.length || 0);
+      console.log('- Education:', cvData.education?.length || 0);
+      console.log('- Skills:', cvData.skills?.length || 0);
+      console.log('- Languages:', cvData.languages?.length || 0);
+      console.log('- Hobbies:', cvData.hobbies?.length || 0);
+      console.log('- Projects:', cvData.projects?.length || 0);
+      console.log('- Custom Sections:', cvData.customSections?.length || 0);
+      console.log('- Summary:', cvData.summary ? '✓' : '✗');
+    };
   }, []);
 
   useEffect(() => {
@@ -150,11 +163,26 @@ const CVForm = ({ onDataChange }) => {
     if (pendingNavigation) {
       window.location.href = pendingNavigation;
     }
+    setPendingNavigation(null);
   };
 
   const handleUnsavedCancel = () => {
     setShowUnsavedModal(false);
     setPendingNavigation(null);
+  };
+
+  const handleSaveAndNavigate = async (targetPath) => {
+    try {
+      setIsSaving(true);
+      await apiService.saveCV(cvData, cvId);
+      setShowUnsavedModal(false);
+      window.location.href = targetPath;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const nextStep = () => {
@@ -235,27 +263,62 @@ const CVForm = ({ onDataChange }) => {
         </div>
       )}
 
-      {/* Modal de données non sauvegardées */}
+      {/* Modal de données non sauvegardées - Version améliorée */}
       {showUnsavedModal && (
         <div className="unsaved-modal-overlay">
           <div className="unsaved-modal">
             <div className="unsaved-modal-header">
-              <div className="unsaved-icon">⚠️</div>
+              <div className="unsaved-icon">💾</div>
               <h3>Données non sauvegardées</h3>
             </div>
             <div className="unsaved-modal-content">
-              <p>Vous avez des données non sauvegardées qui seront perdues si vous quittez cette page.</p>
-              <p className="unsaved-warning">
-                Voulez-vous vraiment continuer sans sauvegarder ?
-              </p>
+              <p>Vous avez des modifications non sauvegardées sur votre CV.</p>
+              <div className="unsaved-data-summary">
+                {cvData.personalInfo.firstName && (
+                  <div className="data-item">✓ Informations personnelles</div>
+                )}
+                {(cvData.experiences && cvData.experiences.length > 0) && (
+                  <div className="data-item">✓ {cvData.experiences.length} expérience(s)</div>
+                )}
+                {(cvData.education && cvData.education.length > 0) && (
+                  <div className="data-item">✓ {cvData.education.length} formation(s)</div>
+                )}
+                {(cvData.skills && cvData.skills.length > 0) && (
+                  <div className="data-item">✓ {cvData.skills.length} compétence(s)</div>
+                )}
+                {(cvData.languages && cvData.languages.length > 0) && (
+                  <div className="data-item">✓ {cvData.languages.length} langue(s)</div>
+                )}
+                {(cvData.hobbies && cvData.hobbies.length > 0) && (
+                  <div className="data-item">✓ {cvData.hobbies.length} centre(s) d'intérêt</div>
+                )}
+                {(cvData.projects && cvData.projects.length > 0) && (
+                  <div className="data-item">✓ {cvData.projects.length} projet(s)</div>
+                )}
+                {cvData.summary && (
+                  <div className="data-item">✓ Profil professionnel</div>
+                )}
+              </div>
+              <p className="unsaved-question">Que souhaitez-vous faire ?</p>
             </div>
             <div className="unsaved-modal-actions">
-              <button onClick={handleUnsavedCancel} className="unsaved-btn cancel">
+              <button
+                onClick={handleUnsavedCancel}
+                className="unsaved-btn cancel"
+                disabled={isSaving}
+              >
                 <FaTimes />
-                Rester et sauvegarder
+                Rester ici
+              </button>
+              <button
+                onClick={() => handleSaveAndNavigate(pendingNavigation)}
+                className="unsaved-btn save"
+                disabled={isSaving}
+              >
+                {isSaving ? <div className="saving-spinner"></div> : <FaCheck />}
+                {isSaving ? 'Sauvegarde...' : 'Sauvegarder et continuer'}
               </button>
               <button onClick={handleUnsavedConfirm} className="unsaved-btn confirm">
-                <FaCheck />
                 Continuer sans sauvegarder
               </button>
             </div>

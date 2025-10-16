@@ -6,7 +6,15 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
   const [viewMode, setViewMode] = useState('desktop'); // desktop, mobile, print
 
   if (!cvData || !cvData.personalInfo) {
-    return <div className="cv-preview-placeholder">Aperçu du CV</div>;
+    return (
+      <div className="cv-preview-placeholder">
+        <div className="placeholder-content">
+          <div className="placeholder-icon">📄</div>
+          <h3>Aperçu du CV</h3>
+          <p>Remplissez le formulaire pour voir l'aperçu de votre CV</p>
+        </div>
+      </div>
+    );
   }
 
   // Helper functions pour les niveaux de langue
@@ -28,6 +36,26 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
 
   return (
     <div className="cv-preview-container">
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="debug-info">
+          <details>
+            <summary>🔧 Debug Info</summary>
+            <div className="debug-content">
+              <p><strong>Personal Info:</strong> {cvData.personalInfo ? '✓' : '✗'}</p>
+              <p><strong>Experiences:</strong> {cvData.experiences?.length || 0}</p>
+              <p><strong>Education:</strong> {cvData.education?.length || 0}</p>
+              <p><strong>Skills:</strong> {cvData.skills?.length || 0}</p>
+              <p><strong>Languages:</strong> {cvData.languages?.length || 0}</p>
+              <p><strong>Hobbies:</strong> {cvData.hobbies?.length || 0}</p>
+              <p><strong>Projects:</strong> {cvData.projects?.length || 0}</p>
+              <p><strong>Custom Sections:</strong> {cvData.customSections?.length || 0}</p>
+              <p><strong>Summary:</strong> {cvData.summary ? '✓' : '✗'}</p>
+            </div>
+          </details>
+        </div>
+      )}
+
       {/* Preview Controls */}
       <div className="cv-preview-controls">
         <div className="cv-preview-zoom">
@@ -98,59 +126,59 @@ const CVPreview = ({ cvData, template = 'modern' }) => {
             </div>
           </header>
 
-      {/* Summary Section */}
-      {summary && (
-        <section className="cv-section">
-          <h2>Profil</h2>
-          <p className="summary-text">{summary}</p>
-        </section>
-      )}
+          {/* Summary Section */}
+          {summary && (
+            <section className="cv-section">
+              <h2>Profil</h2>
+              <p className="summary-text">{summary}</p>
+            </section>
+          )}
 
-      {/* Experience Section */}
-      {experience && experience.length > 0 && (
-        <section className="cv-section">
-          <h2>Expérience Professionnelle</h2>
-          {experience.map((exp, index) => (
-            <div key={exp.id || index} className="experience-item">
-              <div className="job-header">
-                <h3>{exp.position}</h3>
-                <div className="job-meta">
-                  <span className="company">{exp.company}</span>
-                  <span className="dates">
-                    {exp.startDate} - {exp.current ? 'Présent' : exp.endDate}
-                  </span>
+          {/* Experience Section */}
+          {experience && experience.length > 0 && (
+            <section className="cv-section">
+              <h2>Expérience Professionnelle</h2>
+              {experience.map((exp, index) => (
+                <div key={exp.id || index} className="experience-item">
+                  <div className="job-header">
+                    <h3>{exp.position}</h3>
+                    <div className="job-meta">
+                      <span className="company">{exp.company}</span>
+                      <span className="dates">
+                        {exp.startDate} - {exp.current ? 'Présent' : exp.endDate}
+                      </span>
+                    </div>
+                  </div>
+                  {exp.description && (
+                    <p className="job-description">{exp.description}</p>
+                  )}
                 </div>
-              </div>
-              {exp.description && (
-                <p className="job-description">{exp.description}</p>
-              )}
-            </div>
-          ))}
-        </section>
-      )}
+              ))}
+            </section>
+          )}
 
-      {/* Education Section */}
-      {education && education.length > 0 && (
-        <section className="cv-section">
-          <h2>Formation</h2>
-          {education.map((edu, index) => (
-            <div key={edu.id || index} className="education-item">
-              <div className="education-header">
-                <h3>{edu.degree}</h3>
-                <div className="education-meta">
-                  <span className="institution">{edu.institution}</span>
-                  <span className="dates">
-                    {edu.startDate} - {edu.endDate}
-                  </span>
+          {/* Education Section */}
+          {education && education.length > 0 && (
+            <section className="cv-section">
+              <h2>Formation</h2>
+              {education.map((edu, index) => (
+                <div key={edu.id || index} className="education-item">
+                  <div className="education-header">
+                    <h3>{edu.degree}</h3>
+                    <div className="education-meta">
+                      <span className="institution">{edu.institution}</span>
+                      <span className="dates">
+                        {edu.startDate} - {edu.endDate}
+                      </span>
+                    </div>
+                  </div>
+                  {edu.description && (
+                    <p className="education-description">{edu.description}</p>
+                  )}
                 </div>
-              </div>
-              {edu.description && (
-                <p className="education-description">{edu.description}</p>
-              )}
-            </div>
-          ))}
-        </section>
-      )}
+              ))}
+            </section>
+          )}
 
           {/* Skills Section */}
           {skills && skills.length > 0 && (
