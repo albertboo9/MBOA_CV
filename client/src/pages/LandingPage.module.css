@@ -1210,56 +1210,162 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Tablettes */
-@media (max-width: 1024px) {
+/* Desktop Large (1200px - 1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .heroContainer {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+  }
+
+  .heroTitle {
+    font-size: 3.2rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.05rem;
+  }
+
+  .techSpecs {
+    gap: 1.5rem;
+  }
+
+  .innovationGrid {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 2rem;
+  }
+
+  .cvBuilder {
+    max-width: 400px;
+    height: 500px;
+  }
+}
+
+/* Desktop (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
   .heroContainer {
     grid-template-columns: 1fr;
     gap: 3rem;
     text-align: center;
   }
-  
+
   .heroTitle {
     font-size: 3rem;
   }
-  
+
   .heroSubtitle {
     margin: 0 auto 2.5rem;
+    font-size: 1rem;
   }
-  
+
   .heroActions {
     justify-content: center;
   }
-  
+
   .techSpecs {
     justify-content: center;
+    gap: 1.5rem;
   }
-  
+
   .innovationGrid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
   }
-  
+
   .cvBuilder {
     max-width: 350px;
     height: 450px;
   }
-  
+
   .sectionHeader h2 {
     font-size: 2.5rem;
   }
 }
 
-/* Mobiles - Large */
-@media (max-width: 768px) {
+/* Tablet Large (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
   .navContainer {
     padding: 0 1.5rem;
   }
-  
+
+  .heroSection {
+    padding: 75px 1.5rem 2rem;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 2.8rem;
+  }
+
+  .heroSubtitle {
+    margin: 0 auto 2.5rem;
+    font-size: 1rem;
+  }
+
+  .heroActions {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .techSpecs {
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .specItem {
+    min-width: calc(50% - 0.75rem);
+    flex: 1;
+  }
+
+  .innovationSection {
+    padding: 7rem 1.5rem;
+  }
+
+  .innovationGrid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .innovationCard {
+    padding: 2.5rem 2rem;
+    min-height: 300px;
+  }
+
+  .finalCta {
+    padding: 7rem 1.5rem;
+  }
+
+  .ctaContent h2 {
+    font-size: 2.8rem;
+  }
+
+  .cvBuilder {
+    max-width: 380px;
+    height: 480px;
+  }
+}
+
+/* Tablet (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .navContainer {
+    padding: 0 1rem;
+  }
+
   /* Menu mobile */
   .mobileMenuButton {
     display: block;
   }
-  
+
   .navLinks {
     position: fixed;
     top: 0;
@@ -1275,183 +1381,715 @@
     border-left: 1px solid rgba(0, 243, 255, 0.2);
     z-index: 1000;
   }
-  
+
   .navLinks.active {
     right: 0;
   }
-  
+
   .navCta {
     margin: 1rem;
   }
-  
+
   .navCtaDesktop {
     display: none;
   }
-  
+
   .heroSection {
-    padding: 70px 1.5rem 2rem;
+    padding: 70px 1rem 2rem;
   }
-  
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
+  }
+
   .heroTitle {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
   }
-  
+
   .heroSubtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin: 0 auto 2rem;
   }
-  
+
   .heroActions {
     flex-direction: column;
     align-items: center;
-  }
-  
-  .btnPrimary, .btnSecondary {
-    width: 100%;
-    max-width: 300px;
-  }
-  
-  .techSpecs {
     gap: 1rem;
   }
-  
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .techSpecs {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
   .specItem {
     min-width: calc(50% - 0.5rem);
     flex: 1;
   }
-  
+
   .sectionHeader h2 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
-  
+
   .innovationSection {
-    padding: 6rem 1.5rem;
+    padding: 5rem 1rem;
   }
-  
+
   .innovationGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .innovationCard {
     padding: 2rem 1.5rem;
-    min-height: 280px;
+    min-height: 260px;
   }
-  
+
   .finalCta {
-    padding: 6rem 1.5rem;
+    padding: 5rem 1rem;
   }
-  
+
   .ctaContent h2 {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
   }
-  
+
   .ctaButton {
     width: 100%;
-    max-width: 300px;
+    max-width: 280px;
   }
-  
+
   .footerContent {
     flex-direction: column;
     text-align: center;
     gap: 2rem;
   }
-  
+
   .cvBuilder {
-    max-width: 300px;
-    height: 400px;
+    max-width: 320px;
+    height: 420px;
   }
 }
 
-/* Mobiles - Small */
-@media (max-width: 480px) {
+/* Mobile Large (428px - 575px) */
+@media (min-width: 428px) and (max-width: 575px) {
   .navContainer {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
-  
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .navLinks {
+    width: 85%;
+  }
+
   .heroSection {
-    padding: 70px 1rem 2rem;
+    padding: 70px 0.75rem 2rem;
   }
-  
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
   .heroTitle {
-    font-size: 2rem;
+    font-size: 2.1rem;
     line-height: 1.2;
   }
-  
+
   .heroBadge {
     font-size: 0.7rem;
     padding: 0.5rem 1rem;
+    margin-bottom: 2rem;
   }
-  
+
+  .heroSubtitle {
+    font-size: 0.9rem;
+    margin: 0 auto 1.5rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 260px;
+  }
+
   .techSpecs {
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
   }
-  
+
   .specItem {
     width: 100%;
-    max-width: 200px;
+    max-width: 220px;
   }
-  
+
   .sectionHeader h2 {
     font-size: 2rem;
   }
-  
+
   .sectionHeader p {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
-  
+
   .innovationSection {
-    padding: 4rem 1rem;
+    padding: 4rem 0.75rem;
   }
-  
+
+  .innovationGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
   .innovationCard {
-    padding: 1.5rem 1rem;
-    min-height: 250px;
+    padding: 1.75rem 1.25rem;
+    min-height: 240px;
   }
-  
+
   .innovationIcon {
     font-size: 2.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .innovationCard h3 {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
   }
-  
+
   .finalCta {
-    padding: 4rem 1rem;
+    padding: 4rem 0.75rem;
   }
-  
+
   .ctaContent h2 {
     font-size: 2rem;
   }
-  
+
   .ctaContent p {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
-  
+
+  .ctaButton {
+    width: 100%;
+    max-width: 260px;
+  }
+
   .cvBuilder {
-    max-width: 280px;
-    height: 350px;
+    max-width: 290px;
+    height: 360px;
   }
-  
+
   .builderContent {
     padding: 1rem;
   }
-  
+
   .cvPreview {
     padding: 1rem;
   }
-  
+
   .previewHeader {
     flex-direction: column;
     text-align: center;
     gap: 0.8rem;
   }
-  
+
   .avatarPlaceholder {
     width: 50px;
     height: 50px;
+  }
+}
+
+/* Mobile Medium (375px - 427px) - iPhone standard */
+@media (min-width: 375px) and (max-width: 427px) {
+  .navContainer {
+    padding: 0 0.5rem;
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .navLinks {
+    width: 90%;
+  }
+
+  .heroSection {
+    padding: 70px 0.5rem 2rem;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 1.9rem;
+    line-height: 1.2;
+  }
+
+  .heroBadge {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.85rem;
+    margin: 0 auto 1.5rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 240px;
+    padding: 0.875rem 1.5rem;
+  }
+
+  .techSpecs {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .specItem {
+    width: 100%;
+    max-width: 200px;
+    padding: 1rem;
+  }
+
+  .specValue {
+    font-size: 1.2rem;
+  }
+
+  .specLabel {
+    font-size: 0.7rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.8rem;
+  }
+
+  .sectionHeader p {
+    font-size: 0.9rem;
+  }
+
+  .innovationSection {
+    padding: 3.5rem 0.5rem;
+  }
+
+  .innovationGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .innovationCard {
+    padding: 1.5rem 1rem;
+    min-height: 220px;
+  }
+
+  .innovationIcon {
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .innovationCard h3 {
+    font-size: 1.2rem;
+  }
+
+  .innovationCard p {
+    font-size: 0.9rem;
+  }
+
+  .finalCta {
+    padding: 3.5rem 0.5rem;
+  }
+
+  .ctaContent h2 {
+    font-size: 1.8rem;
+  }
+
+  .ctaContent p {
+    font-size: 0.9rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    max-width: 240px;
+    padding: 1rem 2rem;
+  }
+
+  .cvBuilder {
+    max-width: 270px;
+    height: 340px;
+  }
+
+  .builderContent {
+    padding: 0.75rem;
+  }
+
+  .cvPreview {
+    padding: 0.75rem;
+  }
+
+  .previewHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .avatarPlaceholder {
+    width: 45px;
+    height: 45px;
+  }
+
+  .nameGlow {
+    font-size: 1rem;
+  }
+
+  .titleGlow {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Small (320px - 374px) */
+@media (min-width: 320px) and (max-width: 374px) {
+  .navContainer {
+    padding: 0 0.25rem;
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .navLinks {
+    width: 95%;
+  }
+
+  .heroSection {
+    padding: 70px 0.25rem 2rem;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 1.7rem;
+    line-height: 1.2;
+  }
+
+  .heroBadge {
+    font-size: 0.6rem;
+    padding: 0.35rem 0.7rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.8rem;
+    margin: 0 auto 1.25rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 220px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  .techSpecs {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .specItem {
+    width: 100%;
+    max-width: 180px;
+    padding: 0.75rem;
+  }
+
+  .specValue {
+    font-size: 1.1rem;
+  }
+
+  .specLabel {
+    font-size: 0.65rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.6rem;
+  }
+
+  .sectionHeader p {
+    font-size: 0.85rem;
+  }
+
+  .innovationSection {
+    padding: 3rem 0.25rem;
+  }
+
+  .innovationGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .innovationCard {
+    padding: 1.25rem 0.75rem;
+    min-height: 200px;
+  }
+
+  .innovationIcon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .innovationCard h3 {
+    font-size: 1.1rem;
+  }
+
+  .innovationCard p {
+    font-size: 0.85rem;
+  }
+
+  .finalCta {
+    padding: 3rem 0.25rem;
+  }
+
+  .ctaContent h2 {
+    font-size: 1.6rem;
+  }
+
+  .ctaContent p {
+    font-size: 0.85rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    max-width: 220px;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .cvBuilder {
+    max-width: 250px;
+    height: 320px;
+  }
+
+  .builderContent {
+    padding: 0.5rem;
+  }
+
+  .cvPreview {
+    padding: 0.5rem;
+  }
+
+  .previewHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .avatarPlaceholder {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nameGlow {
+    font-size: 0.9rem;
+  }
+
+  .titleGlow {
+    font-size: 0.75rem;
+  }
+}
+
+/* Très petits écrans (moins de 320px) */
+@media (max-width: 319px) {
+  .navContainer {
+    padding: 0 0.1rem;
+  }
+
+  .mobileMenuButton {
+    display: block;
+  }
+
+  .navLinks {
+    width: 100%;
+  }
+
+  .heroSection {
+    padding: 70px 0.1rem 2rem;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .heroTitle {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .heroBadge {
+    font-size: 0.55rem;
+    padding: 0.3rem 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.75rem;
+    margin: 0 auto 1rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    max-width: 200px;
+    padding: 0.625rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .techSpecs {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .specItem {
+    width: 100%;
+    max-width: 160px;
+    padding: 0.5rem;
+  }
+
+  .specValue {
+    font-size: 1rem;
+  }
+
+  .specLabel {
+    font-size: 0.6rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.4rem;
+  }
+
+  .sectionHeader p {
+    font-size: 0.8rem;
+  }
+
+  .innovationSection {
+    padding: 2.5rem 0.1rem;
+  }
+
+  .innovationGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .innovationCard {
+    padding: 1rem 0.5rem;
+    min-height: 180px;
+  }
+
+  .innovationIcon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .innovationCard h3 {
+    font-size: 1rem;
+  }
+
+  .innovationCard p {
+    font-size: 0.8rem;
+  }
+
+  .finalCta {
+    padding: 2.5rem 0.1rem;
+  }
+
+  .ctaContent h2 {
+    font-size: 1.4rem;
+  }
+
+  .ctaContent p {
+    font-size: 0.8rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    max-width: 200px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+  }
+
+  .cvBuilder {
+    max-width: 230px;
+    height: 300px;
+  }
+
+  .builderContent {
+    padding: 0.25rem;
+  }
+
+  .cvPreview {
+    padding: 0.25rem;
+  }
+
+  .previewHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .avatarPlaceholder {
+    width: 35px;
+    height: 35px;
+  }
+
+  .nameGlow {
+    font-size: 0.8rem;
+  }
+
+  .titleGlow {
+    font-size: 0.7rem;
   }
 }
 

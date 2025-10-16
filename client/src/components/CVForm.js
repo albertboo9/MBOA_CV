@@ -22,6 +22,10 @@ const CVForm = ({ onDataChange }) => {
     experiences: [],
     education: [],
     skills: [],
+    languages: [],
+    hobbies: [],
+    projects: [],
+    customSections: [],
     summary: ''
   });
 
@@ -30,7 +34,11 @@ const CVForm = ({ onDataChange }) => {
     { id: 2, title: 'Expériences Professionnelles', component: ExperienceStep },
     { id: 3, title: 'Formation', component: EducationStep },
     { id: 4, title: 'Compétences', component: SkillsStep },
-    { id: 5, title: 'Accroche', component: SummaryStep }
+    { id: 5, title: 'Langues', component: LanguagesStep },
+    { id: 6, title: 'Loisirs', component: HobbiesStep },
+    { id: 7, title: 'Projets', component: ProjectsStep },
+    { id: 8, title: 'Sections Supplémentaires', component: CustomSectionsStep },
+    { id: 9, title: 'Accroche', component: SummaryStep }
   ];
 
   useEffect(() => {
@@ -554,6 +562,475 @@ const SummaryStep = ({ data, updateData }) => {
           placeholder="Décrivez votre parcours, vos motivations et vos objectifs professionnels..."
         />
       </div>
+    </div>
+  );
+};
+
+// Nouvelles sections ajoutées
+
+const LanguagesStep = ({ data, updateData }) => {
+  const [languages, setLanguages] = useState(data.languages || []);
+
+  const addLanguage = () => {
+    setLanguages([...languages, {
+      id: Date.now(),
+      name: '',
+      level: 1, // 1-5 scale
+      certification: ''
+    }]);
+  };
+
+  const updateLanguage = (id, field, value) => {
+    setLanguages(languages.map(lang =>
+      lang.id === id ? { ...lang, [field]: value } : lang
+    ));
+  };
+
+  const removeLanguage = (id) => {
+    setLanguages(languages.filter(lang => lang.id !== id));
+  };
+
+  useEffect(() => {
+    updateData('languages', languages);
+  }, [languages, updateData]);
+
+  const getLevelLabel = (level) => {
+    const levels = ['', 'Débutant', 'Intermédiaire', 'Avancé', 'Courant', 'Langue maternelle'];
+    return levels[level] || '';
+  };
+
+  const getLevelColor = (level) => {
+    const colors = ['', '#ff4757', '#ffa500', '#3498db', '#00ff88', '#00d4ff'];
+    return colors[level] || '#ccc';
+  };
+
+  return (
+    <div className="languages-step">
+      <h2>Langues</h2>
+      {languages.map((lang) => (
+        <div key={lang.id} className="language-item">
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Langue</label>
+              <input
+                type="text"
+                value={lang.name}
+                onChange={(e) => updateLanguage(lang.id, 'name', e.target.value)}
+                placeholder="Ex: Français, Anglais..."
+              />
+            </div>
+            <div className="form-group">
+              <label>Niveau</label>
+              <select
+                value={lang.level}
+                onChange={(e) => updateLanguage(lang.id, 'level', parseInt(e.target.value))}
+              >
+                <option value={1}>Débutant</option>
+                <option value={2}>Intermédiaire</option>
+                <option value={3}>Avancé</option>
+                <option value={4}>Courant</option>
+                <option value={5}>Langue maternelle</option>
+              </select>
+            </div>
+            <div className="form-group full-width">
+              <label>Certification (optionnel)</label>
+              <input
+                type="text"
+                value={lang.certification}
+                onChange={(e) => updateLanguage(lang.id, 'certification', e.target.value)}
+                placeholder="Ex: TOEIC, DELF..."
+              />
+            </div>
+          </div>
+
+          {/* Barre de niveau visuelle */}
+          <div className="language-level-visual">
+            <div className="level-label">{getLevelLabel(lang.level)}</div>
+            <div className="level-bar">
+              {[1, 2, 3, 4, 5].map((level) => (
+                <div
+                  key={level}
+                  className={`level-segment ${level <= lang.level ? 'active' : ''}`}
+                  style={{
+                    background: level <= lang.level ? getLevelColor(lang.level) : '#e0e0e0'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => removeLanguage(lang.id)}
+            className="btn-remove"
+          >
+            Supprimer
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addLanguage} className="btn-add">
+        + Ajouter une langue
+      </button>
+    </div>
+  );
+};
+
+const HobbiesStep = ({ data, updateData }) => {
+  const [hobbies, setHobbies] = useState(data.hobbies || []);
+  const [newHobby, setNewHobby] = useState('');
+
+  const addHobby = () => {
+    if (newHobby.trim()) {
+      setHobbies([...hobbies, {
+        id: Date.now(),
+        name: newHobby.trim(),
+        description: ''
+      }]);
+      setNewHobby('');
+    }
+  };
+
+  const updateHobby = (id, field, value) => {
+    setHobbies(hobbies.map(hobby =>
+      hobby.id === id ? { ...hobby, [field]: value } : hobby
+    ));
+  };
+
+  const removeHobby = (id) => {
+    setHobbies(hobbies.filter(hobby => hobby.id !== id));
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addHobby();
+    }
+  };
+
+  useEffect(() => {
+    updateData('hobbies', hobbies);
+  }, [hobbies, updateData]);
+
+  return (
+    <div className="hobbies-step">
+      <h2>Centres d'Intérêt & Loisirs</h2>
+      <div className="hobby-input">
+        <input
+          type="text"
+          value={newHobby}
+          onChange={(e) => setNewHobby(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Ajouter un loisir ou centre d'intérêt..."
+        />
+        <button type="button" onClick={addHobby} className="btn-add">
+          Ajouter
+        </button>
+      </div>
+      <div className="hobbies-list">
+        {hobbies.map((hobby) => (
+          <div key={hobby.id} className="hobby-item">
+            <div className="hobby-content">
+              <input
+                type="text"
+                value={hobby.name}
+                onChange={(e) => updateHobby(hobby.id, 'name', e.target.value)}
+                className="hobby-name-input"
+              />
+              <textarea
+                value={hobby.description}
+                onChange={(e) => updateHobby(hobby.id, 'description', e.target.value)}
+                placeholder="Description optionnelle..."
+                rows="2"
+                className="hobby-description"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => removeHobby(hobby.id)}
+              className="btn-remove"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ProjectsStep = ({ data, updateData }) => {
+  const [projects, setProjects] = useState(data.projects || []);
+
+  const addProject = () => {
+    setProjects([...projects, {
+      id: Date.now(),
+      name: '',
+      description: '',
+      technologies: '',
+      url: '',
+      startDate: '',
+      endDate: '',
+      current: false
+    }]);
+  };
+
+  const updateProject = (id, field, value) => {
+    setProjects(projects.map(proj =>
+      proj.id === id ? { ...proj, [field]: value } : proj
+    ));
+  };
+
+  const removeProject = (id) => {
+    setProjects(projects.filter(proj => proj.id !== id));
+  };
+
+  useEffect(() => {
+    updateData('projects', projects);
+  }, [projects, updateData]);
+
+  return (
+    <div className="projects-step">
+      <h2>Projets</h2>
+      {projects.map((project) => (
+        <div key={project.id} className="project-item">
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Nom du projet</label>
+              <input
+                type="text"
+                value={project.name}
+                onChange={(e) => updateProject(project.id, 'name', e.target.value)}
+                placeholder="Ex: Application E-commerce"
+              />
+            </div>
+            <div className="form-group">
+              <label>Technologies utilisées</label>
+              <input
+                type="text"
+                value={project.technologies}
+                onChange={(e) => updateProject(project.id, 'technologies', e.target.value)}
+                placeholder="Ex: React, Node.js, MongoDB"
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de début</label>
+              <input
+                type="month"
+                value={project.startDate}
+                onChange={(e) => updateProject(project.id, 'startDate', e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date de fin</label>
+              <input
+                type="month"
+                value={project.endDate}
+                onChange={(e) => updateProject(project.id, 'endDate', e.target.value)}
+                disabled={project.current}
+              />
+            </div>
+            <div className="form-group checkbox">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={project.current}
+                  onChange={(e) => updateProject(project.id, 'current', e.target.checked)}
+                />
+                Projet en cours
+              </label>
+            </div>
+            <div className="form-group">
+              <label>URL/Démo (optionnel)</label>
+              <input
+                type="url"
+                value={project.url}
+                onChange={(e) => updateProject(project.id, 'url', e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="form-group full-width">
+              <label>Description du projet</label>
+              <textarea
+                value={project.description}
+                onChange={(e) => updateProject(project.id, 'description', e.target.value)}
+                rows="3"
+                placeholder="Décrivez le projet, vos responsabilités et les résultats obtenus..."
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => removeProject(project.id)}
+            className="btn-remove"
+          >
+            Supprimer
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addProject} className="btn-add">
+        + Ajouter un projet
+      </button>
+    </div>
+  );
+};
+
+const CustomSectionsStep = ({ data, updateData }) => {
+  const [customSections, setCustomSections] = useState(data.customSections || []);
+
+  const addCustomSection = () => {
+    setCustomSections([...customSections, {
+      id: Date.now(),
+      title: '',
+      type: 'text', // text, list, or description
+      content: '',
+      items: []
+    }]);
+  };
+
+  const updateCustomSection = (id, field, value) => {
+    setCustomSections(customSections.map(section =>
+      section.id === id ? { ...section, [field]: value } : section
+    ));
+  };
+
+  const removeCustomSection = (id) => {
+    setCustomSections(customSections.filter(section => section.id !== id));
+  };
+
+  const addListItem = (sectionId) => {
+    setCustomSections(customSections.map(section =>
+      section.id === sectionId
+        ? { ...section, items: [...section.items, ''] }
+        : section
+    ));
+  };
+
+  const updateListItem = (sectionId, itemIndex, value) => {
+    setCustomSections(customSections.map(section =>
+      section.id === sectionId
+        ? {
+            ...section,
+            items: section.items.map((item, index) =>
+              index === itemIndex ? value : item
+            )
+          }
+        : section
+    ));
+  };
+
+  const removeListItem = (sectionId, itemIndex) => {
+    setCustomSections(customSections.map(section =>
+      section.id === sectionId
+        ? {
+            ...section,
+            items: section.items.filter((_, index) => index !== itemIndex)
+          }
+        : section
+    ));
+  };
+
+  useEffect(() => {
+    updateData('customSections', customSections);
+  }, [customSections, updateData]);
+
+  return (
+    <div className="custom-sections-step">
+      <h2>Sections Supplémentaires</h2>
+      <p className="step-description">
+        Ajoutez des sections personnalisées à votre CV pour mettre en valeur d'autres aspects de votre profil.
+      </p>
+
+      {customSections.map((section) => (
+        <div key={section.id} className="custom-section-item">
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Titre de la section</label>
+              <input
+                type="text"
+                value={section.title}
+                onChange={(e) => updateCustomSection(section.id, 'title', e.target.value)}
+                placeholder="Ex: Certifications, Publications, Bénévolat..."
+              />
+            </div>
+            <div className="form-group">
+              <label>Type de contenu</label>
+              <select
+                value={section.type}
+                onChange={(e) => updateCustomSection(section.id, 'type', e.target.value)}
+              >
+                <option value="text">Texte libre</option>
+                <option value="list">Liste à puces</option>
+                <option value="description">Description détaillée</option>
+              </select>
+            </div>
+
+            {section.type === 'text' && (
+              <div className="form-group full-width">
+                <label>Contenu</label>
+                <textarea
+                  value={section.content}
+                  onChange={(e) => updateCustomSection(section.id, 'content', e.target.value)}
+                  rows="4"
+                  placeholder="Contenu de votre section personnalisée..."
+                />
+              </div>
+            )}
+
+            {section.type === 'list' && (
+              <div className="form-group full-width">
+                <label>Éléments de la liste</label>
+                {section.items.map((item, index) => (
+                  <div key={index} className="list-item-input">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => updateListItem(section.id, index, e.target.value)}
+                      placeholder={`Élément ${index + 1}...`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeListItem(section.id, index)}
+                      className="btn-remove-small"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => addListItem(section.id)}
+                  className="btn-add-small"
+                >
+                  + Ajouter un élément
+                </button>
+              </div>
+            )}
+
+            {section.type === 'description' && (
+              <div className="form-group full-width">
+                <label>Description détaillée</label>
+                <textarea
+                  value={section.content}
+                  onChange={(e) => updateCustomSection(section.id, 'content', e.target.value)}
+                  rows="6"
+                  placeholder="Description détaillée de cette section..."
+                />
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => removeCustomSection(section.id)}
+            className="btn-remove"
+          >
+            Supprimer cette section
+          </button>
+        </div>
+      ))}
+
+      <button type="button" onClick={addCustomSection} className="btn-add">
+        + Ajouter une section personnalisée
+      </button>
     </div>
   );
 };

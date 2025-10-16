@@ -883,180 +883,591 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Tablettes */
-@media (max-width: 1024px) {
+/* Desktop Large (1200px - 1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .templatesGrid {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 2.5rem;
+  }
+
+  .titleSection h1 {
+    font-size: 3.3rem;
+  }
+
+  .featuresPreview h2 {
+    font-size: 2.8rem;
+  }
+}
+
+/* Desktop (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
   .templatesGrid {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
   }
-  
+
   .titleSection h1 {
     font-size: 3rem;
   }
-  
+
   .featuresPreview h2 {
     font-size: 2.5rem;
   }
-  
+
   .modalBody {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 }
 
-/* Mobiles - Large */
-@media (max-width: 768px) {
+/* Tablet Large (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
   .container {
     padding: 0 1.5rem;
   }
-  
+
   .headerContent {
     padding: 1rem 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
   }
-  
+
   .logo {
     font-size: 1.5rem;
     order: -1;
     width: 100%;
     justify-content: center;
   }
-  
+
   .stepIndicator {
     width: 100%;
     justify-content: center;
   }
-  
+
   .main {
     padding: 2rem 0;
   }
-  
+
   .titleSection h1 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
   }
-  
+
   .titleSection p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
   }
-  
+
   .templatesGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
   }
-  
+
   .templateCard {
     padding: 1.5rem;
   }
-  
+
   .actionSection {
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
   }
-  
+
   .pricingInfo {
     align-items: center;
   }
-  
+
   .continueButton {
     width: 100%;
     justify-content: center;
   }
-  
+
   .featuresGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .featuresPreview {
     padding: 4rem 0;
   }
-  
+
   .featuresPreview h2 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     margin-bottom: 2rem;
   }
-  
+
   .modalOverlay {
     padding: 1rem;
   }
-  
+
   .modalContent {
     max-height: 95vh;
   }
-  
+
   .modalHeader {
     padding: 1.5rem 1.5rem 1rem;
   }
-  
+
   .modalBody {
     padding: 1.5rem;
     gap: 1rem;
   }
-  
+
   .modalFooter {
     padding: 1rem 1.5rem;
     flex-direction: column;
   }
 }
 
-/* Mobiles - Small */
-@media (max-width: 480px) {
+/* Tablet (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
   .container {
     padding: 0 1rem;
   }
-  
+
   .headerContent {
     padding: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
-  
-  .backButton {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
+
+  .logo {
+    font-size: 1.3rem;
+    order: -1;
+    width: 100%;
+    justify-content: center;
   }
-  
+
+  .stepIndicator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 1.5rem 0;
+  }
+
   .titleSection h1 {
-    font-size: 2rem;
+    font-size: 2.3rem;
   }
-  
+
   .titleSection p {
     font-size: 1rem;
   }
-  
+
+  .templatesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .templateCard {
+    padding: 1.25rem;
+  }
+
+  .actionSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .pricingInfo {
+    align-items: center;
+  }
+
+  .continueButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .featuresPreview {
+    padding: 3rem 0;
+  }
+
+  .featuresPreview h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .modalOverlay {
+    padding: 0.75rem;
+  }
+
+  .modalContent {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .modalBody {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .modalFooter {
+    padding: 1rem 1.25rem;
+    flex-direction: column;
+  }
+}
+
+/* Mobile Large (428px - 575px) */
+@media (min-width: 428px) and (max-width: 575px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .headerContent {
+    padding: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stepIndicator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 1.5rem 0;
+  }
+
+  .titleSection h1 {
+    font-size: 2.1rem;
+  }
+
+  .titleSection p {
+    font-size: 0.95rem;
+  }
+
+  .templatesGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
   .templateCard {
     padding: 1rem;
   }
-  
+
   .templateMockup {
-    padding: 1rem;
+    padding: 0.75rem;
   }
-  
+
   .mockupHeader {
     flex-direction: column;
     text-align: center;
-    gap: 0.8rem;
+    gap: 0.6rem;
   }
-  
+
   .mockupAvatar {
     width: 40px;
     height: 40px;
   }
-  
+
+  .actionSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
   .priceTag {
-    padding: 0.8rem 1.5rem;
+    padding: 0.75rem 1.25rem;
   }
-  
+
   .price {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
-  
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .featuresPreview {
+    padding: 2.5rem 0;
+  }
+
+  .featuresPreview h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
   .featureHighlight {
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
   }
-  
+
   .featureIcon {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
+  }
+
+  .modalOverlay {
+    padding: 0.5rem;
+  }
+
+  .modalContent {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .modalBody {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .modalFooter {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+  }
+}
+
+/* Mobile Medium (375px - 427px) - iPhone standard */
+@media (min-width: 375px) and (max-width: 427px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .headerContent {
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stepIndicator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 1rem 0;
+  }
+
+  .titleSection h1 {
+    font-size: 1.9rem;
+  }
+
+  .titleSection p {
+    font-size: 0.9rem;
+  }
+
+  .templatesGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .templateCard {
+    padding: 0.75rem;
+  }
+
+  .templateMockup {
+    padding: 0.5rem;
+  }
+
+  .mockupHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .mockupAvatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .actionSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .priceTag {
+    padding: 0.5rem 1rem;
+  }
+
+  .price {
+    font-size: 1.3rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .featuresPreview {
+    padding: 2rem 0;
+  }
+
+  .featuresPreview h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .featureHighlight {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .featureIcon {
+    font-size: 2rem;
+  }
+
+  .modalOverlay {
+    padding: 0.25rem;
+  }
+
+  .modalContent {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 0.75rem 0.75rem 0.5rem;
+  }
+
+  .modalBody {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .modalFooter {
+    padding: 0.5rem 0.75rem;
+    flex-direction: column;
+  }
+}
+
+/* Mobile Small (320px - 374px) */
+@media (min-width: 320px) and (max-width: 374px) {
+  .container {
+    padding: 0 0.25rem;
+  }
+
+  .headerContent {
+    padding: 0.25rem;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .logo {
+    font-size: 1rem;
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stepIndicator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main {
+    padding: 0.75rem 0;
+  }
+
+  .titleSection h1 {
+    font-size: 1.7rem;
+  }
+
+  .titleSection p {
+    font-size: 0.85rem;
+  }
+
+  .templatesGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .templateCard {
+    padding: 0.5rem;
+  }
+
+  .templateMockup {
+    padding: 0.25rem;
+  }
+
+  .mockupHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .mockupAvatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .actionSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .priceTag {
+    padding: 0.25rem 0.75rem;
+  }
+
+  .price {
+    font-size: 1.2rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .featuresPreview {
+    padding: 1.5rem 0;
+  }
+
+  .featuresPreview h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .featureHighlight {
+    padding: 1rem 0.5rem;
+  }
+
+  .featureIcon {
+    font-size: 1.8rem;
+  }
+
+  .modalOverlay {
+    padding: 0.1rem;
+  }
+
+  .modalContent {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 0.5rem 0.5rem 0.25rem;
+  }
+
+  .modalBody {
+    padding: 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .modalFooter {
+    padding: 0.25rem 0.5rem;
+    flex-direction: column;
   }
 }
 
