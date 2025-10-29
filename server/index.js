@@ -33,6 +33,8 @@ app.use(express.urlencoded({ extended: true }));
 // Authentication middleware
 const authenticate = async (req, res, next) => {
   try {
+
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -41,6 +43,7 @@ const authenticate = async (req, res, next) => {
     const idToken = authHeader.split('Bearer ')[1];
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     req.user = decodedToken;
+    
     next();
   } catch (error) {
     console.error('Auth error:', error);
@@ -54,7 +57,7 @@ app.get('/', (req, res) => {
 });
 
 // CV save route
-app.post('/api/cv/save', authenticate, async (req, res) => {
+app.post('/api/cv/save', authenticate,  async (req, res) => {
   try {
     const { cvData, cvId } = req.body;
     const userId = req.user.uid;
@@ -104,7 +107,7 @@ app.get('/api/cv/:cvId', authenticate, async (req, res) => {
 });
 
 // Payment initiation route
-app.post('/api/payment/initiate', authenticate, async (req, res) => {
+app.post('/api/payment/initiate', authenticate,  async (req, res) => {
   try {
     const { cvId, amount = 500 } = req.body;
     const userId = req.user.uid;
@@ -119,7 +122,7 @@ app.post('/api/payment/initiate', authenticate, async (req, res) => {
 });
 
 // Payment processing simulation route
-app.post('/api/payment/process/:paymentId', authenticate, async (req, res) => {
+app.post('/api/payment/process/:paymentId', authenticate,  async (req, res) => {
   try {
     const { paymentId } = req.params;
     const { success = true } = req.body; // Par défaut succès pour simulation
@@ -153,7 +156,7 @@ app.post('/api/download/validate-code', authenticate, async (req, res) => {
 });
 
 // Get user download codes route
-app.get('/api/user/download-codes', authenticate, async (req, res) => {
+app.get('/api/user/download-codes',authenticate,  async (req, res) => {
   try {
     const userId = req.user.uid;
 
@@ -170,7 +173,7 @@ app.get('/api/user/download-codes', authenticate, async (req, res) => {
 app.get('/api/cv/:cvId/download', authenticate, async (req, res) => {
   try {
     const { cvId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.uid
     const { template = 'modern', code } = req.query;
 
     // Get CV data
@@ -218,6 +221,62 @@ app.get('/api/cv/:cvId/download', authenticate, async (req, res) => {
     console.error('Download error:', error);
     res.status(500).json({ error: 'Failed to generate PDF' });
   }
+// Templates route
+app.get('/api/templates', (req, res) => {
+  try {
+    const templates = [
+      {
+        id: 'cyber-modern',
+        name: 'Nexus Cyber',
+        description: 'Design futuriste avec effets néon, parfait pour les métiers tech et innovants',
+        features: ['Effets néon cyan/purple', 'Layout cybernétique', 'Animations avancées'],
+        style: 'cyber',
+        popular: true,
+        gradient: 'linear-gradient(135deg, #00f3ff, #b967ff)',
+        price: 500,
+        available: true
+      },
+      {
+        id: 'quantum-minimal',
+        name: 'Quantum Pro',
+        description: 'Minimalisme high-tech avec typographie géométrique et espace négatif maîtrisé',
+        features: ['Design épuré élégant', 'Focus sur le contenu', 'Typographie géométrique'],
+        style: 'minimal',
+        popular: false,
+        gradient: 'linear-gradient(135deg, #00ff88, #0099ff)',
+        price: 500,
+        available: true
+      },
+      {
+        id: 'synergy-creative',
+        name: 'Synergy Creative',
+        description: 'Design énergique et coloré pour les profils créatifs et entrepreneuriaux',
+        features: ['Éléments graphiques dynamiques', 'Palette colorée moderne', 'Mise en page asymétrique'],
+        style: 'creative',
+        popular: false,
+        gradient: 'linear-gradient(135deg, #ff2aa4, #b967ff)',
+        price: 500,
+        available: true
+      },
+      {
+        id: 'matrix-corporate',
+        name: 'Matrix Elite',
+        description: 'Style corporate futuriste avec structure data-driven et présentation professionnelle',
+        features: ['Structure organisée', 'Style professionnel avancé', 'Optimisé A4'],
+        style: 'corporate',
+        popular: false,
+        gradient: 'linear-gradient(135deg, #0099ff, #00f3ff)',
+        price: 500,
+        available: true
+      }
+    ];
+
+    res.json({ templates });
+  } catch (error) {
+    console.error('Get templates error:', error);
+    res.status(500).json({ error: 'Failed to fetch templates' });
+  }
+});
 });
 
 // Health check
@@ -240,5 +299,4 @@ process.on('SIGTERM', async () => {
 
 app.listen(PORT, () => {
   console.log(`MBOA-CV Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
