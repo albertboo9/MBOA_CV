@@ -4,7 +4,7 @@ import { useAuth } from '../AuthContext';
 import apiService from '../services/api';
 import LoadingOrbit from '../components/LoadingOrbit';
 import { FaCreditCard, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import './PaymentProcessingPage.module.css';
+import styles from './PaymentProcessingPage.module.css';
 
 const PaymentProcessingPage = () => {
   const { paymentId } = useParams();
@@ -47,9 +47,28 @@ const PaymentProcessingPage = () => {
     }
   };
 
-  const handleDownload = () => {
-    if (paymentData?.cvId) {
-      window.open(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/cv/${paymentData.cvId}/download`, '_blank');
+  const handleDownload = async () => {
+    if (paymentData?.cvId && paymentData?.downloadCode) {
+      try {
+        console.log("🔄 Téléchargement avec code:", paymentData.downloadCode);
+        
+        // Utilisez le code de téléchargement
+        const pdfBlob = await apiService.downloadCV(paymentData.cvId, 'modern', paymentData.downloadCode);
+        
+        // Créer le téléchargement
+        const url = window.URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `CV_${paymentData.cvId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+      } catch (error) {
+        console.error('❌ Erreur de téléchargement:', error);
+        alert('Erreur lors du téléchargement: ' + error.message);
+      }
     }
   };
 
@@ -63,14 +82,14 @@ const PaymentProcessingPage = () => {
 
   if (status === 'processing') {
     return (
-      <div className="payment-processing-page">
-        <div className="processing-container">
+      <div className={styles['payment-processing-page']}>
+        <div className={styles['processing-container']}>
           <LoadingOrbit message="Traitement du paiement en cours..." size="large" />
-          <div className="processing-info">
-            <FaCreditCard className="payment-icon" />
+          <div className={styles['processing-info']}>
+            <FaCreditCard className={styles['payment-icon']} />
             <h2>Traitement du paiement</h2>
             <p>Veuillez patienter pendant que nous traitons votre paiement...</p>
-            <div className="payment-details">
+            <div className={styles['payment-details']}>
               <p>ID de paiement: <strong>{paymentId}</strong></p>
               <p>Montant: <strong>500 FCFA</strong></p>
             </div>
@@ -82,18 +101,18 @@ const PaymentProcessingPage = () => {
 
   if (status === 'success') {
     return (
-      <div className="payment-success-page">
-        <div className="success-container">
-          <div className="success-header">
-            <FaCheckCircle className="success-icon" />
+      <div className={styles['payment-success-page']}>
+        <div className={styles['success-container']}>
+          <div className={styles['success-header']}>
+            <FaCheckCircle className={styles['success-icon']} />
             <h1>Paiement réussi !</h1>
             <p>Votre CV est maintenant prêt à être téléchargé</p>
           </div>
 
-          <div className="success-details">
-            <div className="detail-card">
+          <div className={styles['success-details']}>
+            <div className={styles['detail-card']}>
               <h3>Transaction réussie</h3>
-              <div className="transaction-info">
+              <div className={styles['transaction-info']}>
                 <p><strong>ID de transaction:</strong> {paymentData?.transactionId}</p>
                 <p><strong>Montant payé:</strong> 500 FCFA</p>
                 <p><strong>Date:</strong> {new Date().toLocaleDateString('fr-FR')}</p>
@@ -101,31 +120,31 @@ const PaymentProcessingPage = () => {
             </div>
 
             {paymentData?.downloadCode && (
-              <div className="detail-card code-card">
+              <div className={`${styles['detail-card']} ${styles['code-card']}`}>
                 <h3>Code de téléchargement</h3>
                 <p>Conservez ce code pour retélécharger votre CV plus tard :</p>
-                <div className="download-code">
+                <div className={styles['download-code']}>
                   <code>{paymentData.downloadCode}</code>
                   <button
                     onClick={() => navigator.clipboard.writeText(paymentData.downloadCode)}
-                    className="copy-btn"
+                    className={styles['copy-btn']}
                   >
                     Copier
                   </button>
                 </div>
-                <p className="code-note">
+                <p className={styles['code-note']}>
                   <small>Valable 1 an et 10 téléchargements maximum</small>
                 </p>
               </div>
             )}
           </div>
 
-          <div className="success-actions">
-            <button onClick={handleDownload} className="btn-primary download-btn">
+          <div className={styles['success-actions']}>
+            <button onClick={handleDownload} className={`${styles['btn-primary']} ${styles['download-btn']}`}>
               <FaCheckCircle />
               Télécharger mon CV
             </button>
-            <button onClick={handleGoHome} className="btn-secondary">
+            <button onClick={handleGoHome} className={styles['btn-secondary']}>
               Retour à l'accueil
             </button>
           </div>
@@ -136,29 +155,29 @@ const PaymentProcessingPage = () => {
 
   if (status === 'failed') {
     return (
-      <div className="payment-failed-page">
-        <div className="failed-container">
-          <div className="failed-header">
-            <FaTimesCircle className="failed-icon" />
+      <div className={styles['payment-failed-page']}>
+        <div className={styles['failed-container']}>
+          <div className={styles['failed-header']}>
+            <FaTimesCircle className={styles['failed-icon']} />
             <h1>Paiement échoué</h1>
             <p>Une erreur est survenue lors du traitement de votre paiement</p>
           </div>
 
-          <div className="error-details">
-            <div className="error-message">
+          <div className={styles['error-details']}>
+            <div className={styles['error-message']}>
               <p><strong>Raison:</strong> {error}</p>
             </div>
-            <div className="payment-info">
+            <div className={styles['payment-info']}>
               <p><strong>ID de paiement:</strong> {paymentId}</p>
               <p><strong>Montant:</strong> 500 FCFA</p>
             </div>
           </div>
 
-          <div className="failed-actions">
-            <button onClick={handleRetry} className="btn-primary">
+          <div className={styles['failed-actions']}>
+            <button onClick={handleRetry} className={styles['btn-primary']}>
               Réessayer
             </button>
-            <button onClick={handleGoHome} className="btn-secondary">
+            <button onClick={handleGoHome} className={styles['btn-secondary']}>
               Retour à l'accueil
             </button>
           </div>

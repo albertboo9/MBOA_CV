@@ -107,6 +107,21 @@ class ApiService {
     // Return the blob for download
     return await response.blob();
   }
+// Templates operations
+async getTemplates() {
+  const headers = await this.getAuthHeaders();
+  const response = await fetch(`${this.baseURL}/api/templates`, {
+    headers,
+    method: 'GET'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${response.status}`);
+  }
+
+  return await response.json();
+}
 }
 
 export default new ApiService();

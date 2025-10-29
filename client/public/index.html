@@ -1,43 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    
+    <!-- Meta Tags Fondamentaux -->
+    <title>MBOA CV - Créateur de CV Professionnels Haut de Gamme</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    <meta name="theme-color" content="#0066cc" />
+    
+    <!-- Description et Mots-clés -->
+    <meta name="description" content="🚀 Créez un CV professionnel percutant en quelques minutes seulement ! Design élégant, génération PDF haute qualité. 1250 FCFA seulement." />
+    <meta name="keywords" content="CV professionnel, création CV, générateur CV, PDF CV, design CV, recrutement, emploi, carrière, Cameroun" />
+    <meta name="author" content="MBOA CV" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mboa-cv.com/" />
+    <meta property="og:title" content="MBOA CV - Votre CV Professionnel Haut de Gamme" />
+    <meta property="og:description" content="🚀 Transformez votre parcours en opportunités. Créez un CV qui marque les esprits et accélère votre carrière. Seulement 1250 FCFA !" />
+    <meta property="og:image" content="%PUBLIC_URL%/meta.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MBOA CV - Créez votre CV professionnel en ligne" />
+    <meta property="og:site_name" content="MBOA CV" />
+    <meta property="og:locale" content="fr_FR" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://mboa-cv.com/" />
+    <meta property="twitter:title" content="MBOA CV - Votre CV Professionnel Haut de Gamme" />
+    <meta property="twitter:description" content="🚀 Transformez votre parcours en opportunités. Créez un CV qui marque les esprits. Seulement 1250 FCFA !" />
+    <meta property="twitter:image" content="%PUBLIC_URL%/meta.png" />
+    <meta property="twitter:image:alt" content="MBOA CV - Créez votre CV professionnel en ligne" />
+    
+    <!-- LinkedIn -->
+    <meta property="linkedin:title" content="MBOA CV - Votre CV Professionnel Haut de Gamme" />
+    <meta property="linkedin:description" content="Transformez votre parcours en opportunités. Créez un CV qui marque les esprits et accélère votre carrière." />
+    <meta property="linkedin:image" content="%PUBLIC_URL%/meta.png" />
+    
+    <!-- WHATSAPP OPTIMIZATION -->
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:secure_url" content="%PUBLIC_URL%/meta.png" />
+    
+    <!-- WhatsApp spécifique - Format carré recommandé -->
+    <meta property="og:image" content="%PUBLIC_URL%/meta-whatsapp.png" />
+    <meta property="og:image:width" content="300" />
+    <meta property="og:image:height" content="300" />
+    
+    <!-- Alternative pour WhatsApp avec image existante -->
+    <meta name="thumbnail" content="%PUBLIC_URL%/meta.png" />
+    
+    <!-- Favicon et Icons -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
+    
+    <!-- Manifest PWA -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MBOA CV",
+      "url": "https://mboa-cv.com/",
+      "description": "Plateforme de création de CV professionnels haut de gamme - Créez votre CV en ligne facilement",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "1250",
+        "priceCurrency": "XAF",
+        "description": "CV Professionnel PDF Haut de Gamme"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "MBOA CV",
+        "url": "https://mboa-cv.com/"
+      },
+      "screenshot": "%PUBLIC_URL%/meta.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150"
+      }
+    }
+    </script>
+    
+    <!-- Préchargement des ressources critiques -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Analytics (à décommenter et configurer plus tard) -->
     <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
     -->
-    <title>React App</title>
+    
+    <style>
+      /* Style de fallback pendant le chargement de l'app React */
+      .loading-fallback {
+        display: none;
+      }
+    </style>
   </head>
+  
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+        <div style="max-width: 600px; margin: 0 auto;">
+          <h1 style="font-size: 2.5rem; margin-bottom: 20px;">MBOA CV</h1>
+          <h2 style="font-size: 1.8rem; margin-bottom: 30px;">Créateur de CV Professionnels</h2>
+          <p style="font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6;">
+            JavaScript est requis pour utiliser notre plateforme de création de CV professionnels.
+          </p>
+          <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 30px 0;">
+            <p style="margin-bottom: 15px;"><strong>📱 Comment activer JavaScript :</strong></p>
+            <p>• Sur mobile : Paramètres → Site web → JavaScript → Activé</p>
+            <p>• Sur desktop : Préférences → Sécurité → JavaScript → Activé</p>
+          </div>
+          <div style="margin-top: 30px;">
+            <p style="font-size: 1.1rem;"><strong>💼 Alternative :</strong></p>
+            <p>Contactez-nous directement pour créer votre CV professionnel</p>
+            <p style="margin-top: 15px;">📧 Email : contact@mboa-cv.com</p>
+            <p>📞 WhatsApp : +237 650440872</p>
+          </div>
+        </div>
+      </div>
+    </noscript>
+    
+    <div id="root">
+      <!-- Fallback de chargement élégant -->
+      <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-family: 'Arial', sans-serif;
+        text-align: center;
+      ">
+        <div>
+          <!-- Logo/Symbole animé -->
+          <div style="
+            width: 80px;
+            height: 80px;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <div style="
+              width: 40px;
+              height: 40px;
+              background: #ffffff;
+              border-radius: 8px;
+              opacity: 0.8;
+            "></div>
+          </div>
+          
+          <h1 style="font-size: 2.5rem; margin-bottom: 15px; font-weight: bold;">MBOA CV</h1>
+          <p style="font-size: 1.2rem; margin-bottom: 10px; opacity: 0.9;">Votre CV Professionnel Haut de Gamme</p>
+          <div style="
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: inline-block;
+          ">
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">
+               Chargement de votre expérience de création...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Amélioration du loading pour mobile */
+      @media (max-width: 768px) {
+        #root > div {
+          padding: 20px;
+        }
+        
+        #root > div > div h1 {
+          font-size: 2rem;
+        }
+        
+        #root > div > div p {
+          font-size: 1rem;
+        }
+      }
+    </style>
+
     <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      Ce fichier HTML est optimisé pour le partage sur WhatsApp, Facebook, Twitter et LinkedIn.
+      L'image meta.png sera utilisée comme preview lors du partage.
+      
+      Pour tester le partage WhatsApp :
+      1. Ouvrez votre site en production
+      2. Partagez le lien dans WhatsApp
+      3. Vérifiez que l'image et la description s'affichent correctement
+      
+      Note : WhatsApp préfère les images carrées (1:1) pour un affichage optimal.
     -->
   </body>
 </html>
