@@ -236,6 +236,19 @@
   padding: 0 2rem;
 }
 
+/* Responsive Navigation Container */
+@media (max-width: 768px) {
+  .navContainer {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navContainer {
+    padding: 0 0.75rem;
+  }
+}
+
 .logo {
   position: relative;
   display: flex;

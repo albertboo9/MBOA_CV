@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import AuthGuard from './components/AuthGuard';
+import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import TemplateSelectionPage from './pages/TemplateSelectionPage';
@@ -11,10 +12,11 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailedPage from './pages/PaymentFailedPage';
 import UserDashboardPage from './pages/UserDashboardPage';
 import LoadingOrbit from './components/LoadingOrbit';
-import { FaPalette } from 'react-icons/fa';
 import './App.css';
 
-function App() {
+// App Content Component (needs to be inside Router for useLocation)
+function AppContent() {
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Chargement en cours...");
 
@@ -25,10 +27,6 @@ function App() {
 
   const hideLoading = () => {
     setIsLoading(false);
-  };
-
-  const handleTemplatesNavigation = () => {
-    window.navigateWithUnsavedCheck('/templates');
   };
 
   // Global loading context
@@ -75,69 +73,79 @@ function App() {
     };
   }, []);
 
-  // Nettoyer les fonctions dupliquées
+  // Pages that should show the header
+  const pagesWithHeader = ['/', '/templates', '/create-cv', '/dashboard'];
+  const shouldShowHeader = pagesWithHeader.includes(location.pathname) && location.pathname !== '/';
 
+  return (
+    <div className="App">
+      {shouldShowHeader && <Header />}
+
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/templates"
+          element={
+            <AuthGuard>
+              <TemplateSelectionPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/create-cv"
+          element={
+            <AuthGuard>
+              <CVCreationPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/process/:paymentId"
+          element={
+            <AuthGuard>
+              <PaymentProcessingPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/success"
+          element={
+            <AuthGuard>
+              <PaymentSuccessPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/failed"
+          element={
+            <AuthGuard>
+              <PaymentFailedPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <AuthGuard>
+              <UserDashboardPage />
+            </AuthGuard>
+          }
+        />
+      </Routes>
+
+      {isLoading && (
+        <LoadingOrbit message={loadingMessage} size="medium" />
+      )}
+    </div>
+  );
+}
+
+function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/templates"
-              element={
-                <AuthGuard>
-                  <TemplateSelectionPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/create-cv"
-              element={
-                <AuthGuard>
-                  <CVCreationPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/payment/process/:paymentId"
-              element={
-                <AuthGuard>
-                  <PaymentProcessingPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/payment/success"
-              element={
-                <AuthGuard>
-                  <PaymentSuccessPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/payment/failed"
-              element={
-                <AuthGuard>
-                  <PaymentFailedPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <AuthGuard>
-                  <UserDashboardPage />
-                </AuthGuard>
-              }
-            />
-          </Routes>
-
-          {isLoading && (
-            <LoadingOrbit message={loadingMessage} size="medium" />
-          )}
-        </div>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
