@@ -12,7 +12,8 @@ import {
   FaShieldAlt,
   FaTimes,
   FaCrown,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaUser
 } from 'react-icons/fa';
 import styles from './TemplateSelectionPage.module.css';
 

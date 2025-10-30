@@ -16,7 +16,8 @@ import {
   FaSave,
   FaSpinner,
   FaEdit,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaUser
 } from 'react-icons/fa';
 
 import styles from './CVCreationPage.module.css';
