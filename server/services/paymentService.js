@@ -247,27 +247,67 @@ class PaymentService {
    */
   async getUserDownloadCodes(userId) {
     try {
-      const codesSnapshot = await this.downloadCodesCollection
-        .where('userId', '==', userId)
-        .orderBy('createdAt', 'desc')
-        .get();
+      console.log('Getting download codes for user:', userId);
 
-      const codes = [];
-      codesSnapshot.forEach(doc => {
-        const data = doc.data();
-        codes.push({
-          code: doc.id,
-          cvId: data.cvId,
-          createdAt: data.createdAt.toDate(),
-          expiresAt: data.expiresAt.toDate(),
-          downloadCount: data.downloadCount,
-          maxDownloads: data.maxDownloads,
-          isExpired: data.expiresAt.toDate() < new Date(),
-          downloadsRemaining: Math.max(0, data.maxDownloads - data.downloadCount)
+      // Try the compound query first (requires index)
+      try {
+        const codesSnapshot = await this.downloadCodesCollection
+          .where('userId', '==', userId)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        console.log('Found codes snapshot:', codesSnapshot.size);
+
+        const codes = [];
+        codesSnapshot.forEach(doc => {
+          const data = doc.data();
+          console.log('Processing code:', doc.id, data);
+
+          codes.push({
+            code: doc.id,
+            cvId: data.cvId,
+            createdAt: data.createdAt.toDate(),
+            expiresAt: data.expiresAt.toDate(),
+            downloadCount: data.downloadCount || 0,
+            maxDownloads: data.maxDownloads || 10,
+            isExpired: data.expiresAt.toDate() < new Date(),
+            downloadsRemaining: Math.max(0, (data.maxDownloads || 10) - (data.downloadCount || 0))
+          });
         });
-      });
 
-      return codes;
+        console.log('Returning codes:', codes.length);
+        return codes;
+
+      } catch (indexError) {
+        // If index doesn't exist, fall back to getting all codes and filtering client-side
+        console.warn('Index not available, falling back to client-side filtering:', indexError.message);
+
+        const allCodesSnapshot = await this.downloadCodesCollection.get();
+        const codes = [];
+
+        allCodesSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.userId === userId) {
+            console.log('Processing code (fallback):', doc.id, data);
+            codes.push({
+              code: doc.id,
+              cvId: data.cvId,
+              createdAt: data.createdAt.toDate(),
+              expiresAt: data.expiresAt.toDate(),
+              downloadCount: data.downloadCount || 0,
+              maxDownloads: data.maxDownloads || 10,
+              isExpired: data.expiresAt.toDate() < new Date(),
+              downloadsRemaining: Math.max(0, (data.maxDownloads || 10) - (data.downloadCount || 0))
+            });
+          }
+        });
+
+        // Sort by createdAt desc
+        codes.sort((a, b) => b.createdAt - a.createdAt);
+
+        console.log('Returning codes (fallback):', codes.length);
+        return codes;
+      }
     } catch (error) {
       console.error('Get user download codes error:', error);
       throw error;

@@ -122,14 +122,19 @@ app.post('/api/download/validate-code', require('./middleware/auth').authenticat
 app.get('/api/user/download-codes', require('./middleware/auth').authenticate, async (req, res) => {
   try {
     const userId = req.user.uid;
+    console.log('API call: getUserDownloadCodes for user:', userId);
 
     const paymentService = require('./services/paymentService');
     const codes = await paymentService.getUserDownloadCodes(userId);
 
+    console.log('API response: returning', codes.length, 'codes');
     res.json({ downloadCodes: codes });
   } catch (error) {
     console.error('Get user download codes error:', error);
-    res.status(500).json({ error: 'Failed to retrieve download codes' });
+    res.status(500).json({
+      error: 'Failed to retrieve download codes',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
