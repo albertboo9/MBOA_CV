@@ -109,8 +109,10 @@ class CVController {
       // Send PDF buffer
       res.send(pdfBuffer);
 
-      // Log download for analytics
-      await this.logDownload(cvId, userId, template);
+      // Log download for analytics (don't await to avoid blocking response)
+      CVController.prototype.logDownload(cvId, userId, template).catch(err =>
+        console.error('Log download error:', err)
+      );
 
     } catch (error) {
       console.error('Download PDF error:', error);
