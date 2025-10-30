@@ -25,11 +25,13 @@ const UserDashboardPage = () => {
   const loadUserData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await apiService.getUserDownloadCodes();
+      console.log('Download codes response:', response); // Debug log
       setDownloadCodes(response.downloadCodes || []);
     } catch (err) {
       console.error('Error loading user data:', err);
-      setError('Erreur lors du chargement des données');
+      setError('Erreur lors du chargement des données: ' + (err.message || 'Erreur inconnue'));
     } finally {
       setLoading(false);
     }
@@ -40,15 +42,24 @@ const UserDashboardPage = () => {
       // Valider le code et obtenir les informations du CV
       const validationResult = await apiService.validateDownloadCode(code);
 
-      // Ouvrir le téléchargement dans un nouvel onglet
-      const downloadUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/cv/${validationResult.cvId}/download?code=${code}`;
-      window.open(downloadUrl, '_blank');
+      // Télécharger directement via l'API
+      const pdfBlob = await apiService.downloadCV(validationResult.cvId, 'modern', code);
+
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `CV_${validationResult.cvData.personalInfo.firstName}_${validationResult.cvData.personalInfo.lastName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
       // Recharger les données pour mettre à jour les compteurs
       await loadUserData();
     } catch (err) {
       console.error('Download error:', err);
-      alert('Erreur lors du téléchargement: ' + err.message);
+      alert('Erreur lors du téléchargement: ' + (err.message || 'Erreur inconnue'));
     }
   };
 
@@ -131,7 +142,16 @@ const UserDashboardPage = () => {
             Codes de Téléchargement ({downloadCodes.length})
           </h3>
 
-          {downloadCodes.length === 0 ? (
+          {error && (
+            <div className={styles['error-message']}>
+              <p>{error}</p>
+              <button onClick={loadUserData} className={styles['retry-btn']}>
+                Réessayer
+              </button>
+            </div>
+          )}
+
+          {downloadCodes.length === 0 && !error ? (
             <div className={styles['empty-state']}>
               <FaFilePdf className={styles['empty-icon']} />
               <h4>Aucun code de téléchargement</h4>

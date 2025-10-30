@@ -215,6 +215,17 @@ const CVCreationPage = () => {
           </div>
 
           <div className={styles.cvCreationHeaderActions}>
+            <motion.button
+              className={styles.cvCreationDashboardButton}
+              onClick={() => navigate('/dashboard')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Accéder à l'espace professionnel"
+            >
+              <FaUser />
+              <span>Espace Pro</span>
+            </motion.button>
+
             {/* Indicateur d'état avec sauvegarde manuelle */}
             <div className={styles.cvCreationSaveSection}>
             {hasUnsavedChanges && (

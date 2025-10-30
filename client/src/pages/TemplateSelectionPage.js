@@ -221,32 +221,30 @@ const TemplateSelectionPage = () => {
           </motion.div>
 
           <div className={styles.headerActions}>
-            <div className={styles.headerActions}>
-              <motion.div
-                className={styles.stepIndicator}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.4 }}
-              >
-                <div className={styles.stepProgress}>
-                  <div className={styles.stepDot} />
-                  <div className={styles.stepLine} />
-                  <div className={`${styles.stepDot} ${styles.inactive}`} />
-                </div>
-                <span className={styles.stepText}>Étape 1 sur 2</span>
-              </motion.div>
- 
-              <motion.button
-                className={styles.logoutButton}
-                onClick={logout}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                title="Se déconnecter"
-              >
-                <FaSignOutAlt />
-                <span>Déconnexion</span>
-              </motion.button>
-            </div>
+            <motion.button
+              className={styles.dashboardButton}
+              onClick={() => navigate('/dashboard')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Accéder à l'espace professionnel"
+            >
+              <FaUser />
+              <span>Espace Pro</span>
+            </motion.button>
+
+            <motion.div
+              className={styles.stepIndicator}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.4 }}
+            >
+              <div className={styles.stepProgress}>
+                <div className={styles.stepDot} />
+                <div className={styles.stepLine} />
+                <div className={`${styles.stepDot} ${styles.inactive}`} />
+              </div>
+              <span className={styles.stepText}>Étape 1 sur 2</span>
+            </motion.div>
 
             <motion.button
               className={styles.logoutButton}
