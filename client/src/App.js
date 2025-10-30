@@ -74,8 +74,8 @@ function AppContent() {
   }, []);
 
   // Pages that should show the header
-  const pagesWithHeader = ['/', '/templates', '/create-cv', '/dashboard'];
-  const shouldShowHeader = pagesWithHeader.includes(location.pathname) && location.pathname !== '/';
+  const pagesWithHeader = ['/templates', '/create-cv', '/dashboard'];
+  const shouldShowHeader = pagesWithHeader.includes(location.pathname);
 
   return (
     <div className="App">
