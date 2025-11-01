@@ -19,7 +19,6 @@ class ModernDoubleTemplate {
     this.features = [
       'Double colonne moderne',
       'Sidebar avec photo et compétences',
-      'Timeline verticale pour l\'expérience',
       'Design responsive optimisé PDF',
       'Gradients et effets visuels'
     ];

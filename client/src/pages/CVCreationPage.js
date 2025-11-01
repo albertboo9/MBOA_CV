@@ -43,6 +43,8 @@ const CVCreationPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('cyber-modern');
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [previewViewMode, setPreviewViewMode] = useState('desktop');
@@ -55,7 +57,7 @@ const CVCreationPage = () => {
       return;
     }
 
-    // Charger le template sélectionné
+    // Charger le template sélectionné (frontend ID)
     const savedTemplate = localStorage.getItem('selectedTemplate');
     if (savedTemplate) {
       setSelectedTemplate(savedTemplate);
@@ -117,7 +119,7 @@ const CVCreationPage = () => {
   // Téléchargement final
   const handleFinalDownload = async () => {
     if (!cvData.personalInfo.firstName) {
-      alert('Veuillez remplir vos informations personnelles avant de télécharger.');
+      alert('Veuillez remplir vos informations personnelles avant de générer votre CV.');
       return;
     }
 
@@ -130,29 +132,25 @@ const CVCreationPage = () => {
       setIsProcessing(true);
       setShowPaymentModal(false);
 
-      // Simulation de traitement de paiement
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Étape 1: Simulation de traitement de paiement
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Sauvegarder le CV avant téléchargement
+      // Étape 2: Sauvegarder le CV avant téléchargement
       const saveResult = await apiService.saveCV(cvData);
       const cvId = saveResult.cvId;
 
-      // Simuler le paiement réussi (webhook)
-      await fetch('http://localhost:5000/api/payment/webhook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentId: `payment_${cvId}`,
-          status: 'success',
-          transactionId: `txn_${Date.now()}`
-        })
-      });
+      // Étape 3: Initier le paiement
+      const paymentResult = await apiService.initiatePayment(cvId, 1250);
 
-      // Petite pause pour le traitement du webhook
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Étape 4: Simuler le paiement réussi
+      await apiService.processPayment(paymentResult.paymentId, true);
 
-      // Téléchargement du PDF
-      const pdfBlob = await apiService.downloadCV(cvId, selectedTemplate);
+      // Étape 5: Petite pause pour le traitement
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Étape 6: Téléchargement du PDF avec le bon template backend
+      const backendTemplateId = localStorage.getItem('selectedTemplateBackend') || selectedTemplate;
+      const pdfBlob = await apiService.downloadCV(cvId, backendTemplateId);
       const url = window.URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
@@ -162,11 +160,11 @@ const CVCreationPage = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      alert('Téléchargement réussi ! Votre CV a été généré.');
+      alert('🎉 Téléchargement réussi ! Votre CV professionnel a été généré.');
 
     } catch (error) {
       console.error('Erreur de téléchargement:', error);
-      alert('Erreur lors du téléchargement. Veuillez réessayer.');
+      alert('❌ Erreur lors du téléchargement. Veuillez réessayer.');
     } finally {
       setIsProcessing(false);
     }
@@ -180,11 +178,11 @@ const CVCreationPage = () => {
       if (!confirmLeave) return;
     }
 
-    window.showLoading && window.showLoading("Retour aux modèles...");
+    setIsButtonLoading(true);
     setTimeout(() => {
       navigate('/templates');
-      window.hideLoading && window.hideLoading();
-    }, 800);
+      setIsButtonLoading(false);
+    }, 600);
   };
 
   if (!currentUser) {
@@ -331,16 +329,6 @@ const CVCreationPage = () => {
                 >
                   <FaEye />
                   Aperçu du CV
-                </button>
-
-                <button
-                  className={styles.cvCreationDownloadButton}
-                  onClick={handleFinalDownload}
-                  disabled={!cvData.personalInfo.firstName}
-                  type="button"
-                >
-                  <FaDownload />
-                  Générer le PDF
                 </button>
               </div>
 
@@ -500,13 +488,13 @@ const CVCreationPage = () => {
                     className={styles.cvCreationPreviewDownloadCta}
                     onClick={() => {
                       setShowPreviewModal(false);
-                      handleFinalDownload();
+                      setShowPaymentModal(true);
                     }}
                     disabled={!cvData.personalInfo.firstName}
                     type="button"
                   >
                     <FaDownload />
-                    Télécharger ce CV
+                    Générer ce CV (1250 FCFA)
                   </button>
 
                 </div>
@@ -591,15 +579,15 @@ const CVCreationPage = () => {
       </AnimatePresence>
 
       {/* Overlay de traitement */}
-      {isProcessing && (
+      {(isProcessing || isLoading || isButtonLoading) && (
         <div className={styles.cvCreationProcessingOverlay}>
           <div className={styles.cvCreationProcessingModal}>
             <div className={styles.cvCreationProcessingSpinner}></div>
             <h3 className={styles.cvCreationProcessingTitle}>
-              Génération en cours
+              {isButtonLoading ? 'Navigation...' : isLoading ? 'Chargement...' : 'Génération en cours'}
             </h3>
             <p className={styles.cvCreationProcessingMessage}>
-              Préparation de votre CV professionnel...
+              {isButtonLoading ? 'Redirection en cours...' : isLoading ? 'Préparation de l\'interface...' : 'Préparation de votre CV professionnel...'}
             </p>
           </div>
         </div>

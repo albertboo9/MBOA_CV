@@ -138,6 +138,148 @@ app.get('/api/user/download-codes', require('./middleware/auth').authenticate, a
   }
 });
 
+// Templates routes
+app.get('/api/templates', (req, res) => {
+  try {
+    const pdfGenerator = require('./services/pdfGenerator');
+    const availableTemplates = pdfGenerator.getAvailableTemplates();
+
+    // Transform backend templates to frontend format
+    const templates = availableTemplates.map(template => {
+      // Map template IDs to frontend expected format
+      const templateMapping = {
+        'modern-double': {
+          name: 'Modern Double',
+          description: 'Design moderne avec double colonne et sidebar colorée',
+          features: ['Double colonne élégante', 'Sidebar colorée', 'Photo ronde', 'Timeline verticale'],
+          style: 'modern',
+          popular: true,
+          gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+          price: 500,
+          available: true
+        },
+        'creative-vibrant': {
+          name: 'Creative Vibrant',
+          description: 'Design dynamique et coloré pour les profils créatifs et entrepreneuriaux',
+          features: ['Éléments graphiques dynamiques', 'Palette colorée moderne', 'Mise en page asymétrique'],
+          style: 'creative',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #ff2aa4, #b967ff)',
+          price: 500,
+          available: true
+        },
+        'minimalist-professional': {
+          name: 'Minimalist Professional',
+          description: 'Design épuré et élégant, focus sur le contenu avec une typographie raffinée',
+          features: ['Design minimaliste épuré', 'Typographie élégante', 'Espaces négatifs maîtrisés'],
+          style: 'minimal',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #00ff88, #0099ff)',
+          price: 500,
+          available: true
+        },
+        'cyber-neon': {
+          name: 'Cyber Neon',
+          description: 'Design futuriste avec effets néon cyan/purple, parfait pour les métiers tech et innovants',
+          features: ['Effets néon cyan/purple', 'Layout cybernétique', 'Animations avancées'],
+          style: 'cyber',
+          popular: true,
+          gradient: 'linear-gradient(135deg, #00f3ff, #b967ff)',
+          price: 500,
+          available: true
+        },
+        'corporate-executive': {
+          name: 'Corporate Executive',
+          description: 'Design corporate traditionnel avec structure hiérarchisée et élégance professionnelle',
+          features: ['Structure hiérarchisée claire', 'Éléments décoratifs subtils', 'Palette sophistiquée'],
+          style: 'corporate',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #0099ff, #00f3ff)',
+          price: 500,
+          available: true
+        },
+        'tech-modern': {
+          name: 'Tech Modern',
+          description: 'Design moderne et épuré pour les professionnels de la tech et du numérique',
+          features: ['Typographie sans-serif moderne', 'Accents de couleur tech', 'Layout asymétrique'],
+          style: 'tech',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #2563eb, #06b6d4)',
+          price: 500,
+          available: true
+        },
+        'creative-minimal': {
+          name: 'Creative Minimal',
+          description: 'Design créatif minimaliste avec des éléments artistiques subtils et une mise en page élégante',
+          features: ['Éléments artistiques subtils', 'Typographie élégante', 'Espaces équilibrés'],
+          style: 'creative-minimal',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #d4af37, #c0c0c0)',
+          price: 500,
+          available: true
+        },
+        'elegant-classic': {
+          name: 'Elegant Classic',
+          description: 'Design classique élégant avec une touche de sophistication moderne',
+          features: ['Typographie serif élégante', 'Structure hiérarchisée', 'Éléments décoratifs subtils'],
+          style: 'classic',
+          popular: false,
+          gradient: 'linear-gradient(135deg, #1e3a8a, #d4af37)',
+          price: 500,
+          available: true
+        }
+      };
+
+      const frontendTemplate = templateMapping[template.id] || {
+        name: template.name,
+        description: template.description,
+        features: template.features || [],
+        style: template.category || 'general',
+        popular: false,
+        gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+        price: 500,
+        available: true
+      };
+
+      return {
+        id: template.id,
+        name: frontendTemplate.name,
+        description: frontendTemplate.description,
+        features: frontendTemplate.features,
+        style: frontendTemplate.style,
+        popular: frontendTemplate.popular,
+        gradient: frontendTemplate.gradient,
+        price: frontendTemplate.price,
+        available: frontendTemplate.available,
+        category: template.category,
+        version: template.version,
+        author: template.author
+      };
+    });
+
+    res.json({ templates });
+  } catch (error) {
+    console.error('Get templates error:', error);
+    res.status(500).json({ error: 'Failed to fetch templates' });
+  }
+});
+
+// Template validation route
+app.post('/api/templates/:templateId/validate', require('./middleware/auth').authenticate, async (req, res) => {
+  try {
+    const { templateId } = req.params;
+    const { cvData } = req.body;
+
+    const pdfGenerator = require('./services/pdfGenerator');
+    const validation = pdfGenerator.validateCVData(cvData, templateId);
+
+    res.json(validation);
+  } catch (error) {
+    console.error('Template validation error:', error);
+    res.status(500).json({ error: 'Failed to validate template' });
+  }
+});
+
 // Basic error handling
 app.use((err, req, res, next) => {
   console.error('Error:', err);

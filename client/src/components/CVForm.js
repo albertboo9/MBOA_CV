@@ -215,36 +215,36 @@ const CVForm = ({ onDataChange }) => {
     try {
       setIsPaymentProcessing(true);
       setShowPaymentModal(false);
-  
+
       console.log('Starting payment process...', { cvId, cvData: data });
-  
+
       // Étape 1: Sauvegarder le CV d'abord
       let finalCvId = cvId;
-      
+
       if (!finalCvId) {
         console.log('No CV ID found, saving CV first...');
-        const saveResult = await apiService.saveCV(data);
+        const saveResult = await apiService.saveCV(data, cvId);
         finalCvId = saveResult.cvId;
         setCvId(finalCvId);
         console.log('CV saved with ID:', finalCvId);
       }
-  
+
       // Étape 2: Initier le paiement avec l'ID valide
       if (!finalCvId) {
         throw new Error('CV ID is required for payment');
       }
-  
+
       console.log('Initiating payment for CV:', finalCvId);
       const paymentResult = await apiService.initiatePayment(finalCvId, 1250);
       console.log('Payment initiated:', paymentResult);
-  
+
       // Étape 3: Rediriger vers la page de traitement
       if (paymentResult.paymentId) {
         navigate(`/payment/process/${paymentResult.paymentId}`);
       } else {
         throw new Error('No payment ID received from server');
       }
-  
+
     } catch (error) {
       console.error('Erreur lors de l\'initiation du paiement:', error);
       alert('Erreur lors de l\'initiation du paiement: ' + error.message);
@@ -442,11 +442,19 @@ const CVForm = ({ onDataChange }) => {
           )}
           {currentStep === steps.length && (
             <div className="final-actions">
-              <button className="btn-primary" onClick={() => setShowPaymentModal(true)}>
-                Générer le CV (1250 FCFA)
-              </button>
-              <button className="btn-secondary" onClick={() => onDataChange(cvData, 'preview')}>
-                Aperçu Gratuit
+              <button
+                className="btn-primary"
+                onClick={() => setShowPaymentModal(true)}
+                disabled={isPaymentProcessing}
+              >
+                {isPaymentProcessing ? (
+                  <>
+                    <div className="btn-spinner"></div>
+                    Traitement...
+                  </>
+                ) : (
+                  `Générer le CV (1250 FCFA)`
+                )}
               </button>
             </div>
           )}

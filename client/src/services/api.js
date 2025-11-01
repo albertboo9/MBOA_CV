@@ -122,6 +122,26 @@ async getTemplates() {
 
   return await response.json();
 }
+
+// Template validation
+async validateTemplate(templateId, cvData) {
+  const headers = await this.getAuthHeaders();
+  const response = await fetch(`${this.baseURL}/api/templates/${templateId}/validate`, {
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify({ cvData })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP ${response.status}`);
+  }
+
+  return await response.json();
+}
 }
 
 export default new ApiService();

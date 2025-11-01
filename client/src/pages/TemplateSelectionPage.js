@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import apiService from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +14,9 @@ import {
   FaTimes,
   FaCrown,
   FaSignOutAlt,
-  FaUser
+  FaUser,
+  FaBars,
+  FaTimes as FaClose
 } from 'react-icons/fa';
 import styles from './TemplateSelectionPage.module.css';
 
@@ -36,45 +39,120 @@ const TemplateSelectionPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedTemplateData, setSelectedTemplateData] = useState(null);
   const [hoveredTemplate, setHoveredTemplate] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const templates = [
-    {
-      id: 'cyber-modern',
-      name: 'Nexus Cyber',
-      description: 'Design futuriste avec effets néon, parfait pour les métiers tech et innovants',
-      features: ['Effets néon cyan/purple', 'Layout cybernétique', 'Animations avancées'],
-      style: 'cyber',
-      popular: true,
-      gradient: 'linear-gradient(135deg, #00f3ff, #b967ff)'
-    },
-    {
-      id: 'quantum-minimal',
-      name: 'Quantum Pro',
-      description: 'Minimalisme high-tech avec typographie géométrique et espace négatif maîtrisé',
-      features: ['Design épuré élégant', 'Focus sur le contenu', 'Typographie géométrique'],
-      style: 'minimal',
-      popular: false,
-      gradient: 'linear-gradient(135deg, #00ff88, #0099ff)'
-    },
-    {
-      id: 'synergy-creative',
-      name: 'Synergy Creative',
-      description: 'Design énergique et coloré pour les profils créatifs et entrepreneuriaux',
-      features: ['Éléments graphiques dynamiques', 'Palette colorée moderne', 'Mise en page asymétrique'],
-      style: 'creative',
-      popular: false,
-      gradient: 'linear-gradient(135deg, #ff2aa4, #b967ff)'
-    },
-    {
-      id: 'matrix-corporate',
-      name: 'Matrix Elite',
-      description: 'Style corporate futuriste avec structure data-driven et présentation professionnelle',
-      features: ['Structure organisée', 'Style professionnel avancé', 'Optimisé A4'],
-      style: 'corporate',
-      popular: false,
-      gradient: 'linear-gradient(135deg, #0099ff, #00f3ff)'
-    }
-  ];
+  // Load templates from backend
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await apiService.getTemplates();
+        setTemplates(response.templates || []);
+      } catch (err) {
+        console.error('Error loading templates:', err);
+        setError('Erreur lors du chargement des templates');
+        // Fallback to hardcoded templates if API fails
+        setTemplates([
+          {
+            id: 'modern-double',
+            name: 'Modern Double',
+            description: 'Design moderne avec double colonne et sidebar colorée',
+            features: ['Double colonne élégante', 'Sidebar colorée', 'Photo ronde', 'Timeline verticale'],
+            style: 'modern',
+            popular: true,
+            gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'creative-vibrant',
+            name: 'Creative Vibrant',
+            description: 'Design dynamique et coloré pour les profils créatifs et entrepreneuriaux',
+            features: ['Éléments graphiques dynamiques', 'Palette colorée moderne', 'Mise en page asymétrique'],
+            style: 'creative',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #ff2aa4, #b967ff)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'minimalist-professional',
+            name: 'Minimalist Professional',
+            description: 'Design épuré et élégant, focus sur le contenu avec une typographie raffinée',
+            features: ['Design minimaliste épuré', 'Typographie élégante', 'Espaces négatifs maîtrisés'],
+            style: 'minimal',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #00ff88, #0099ff)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'cyber-neon',
+            name: 'Cyber Neon',
+            description: 'Design futuriste avec effets néon cyan/purple, parfait pour les métiers tech et innovants',
+            features: ['Effets néon cyan/purple', 'Layout cybernétique', 'Animations avancées'],
+            style: 'cyber',
+            popular: true,
+            gradient: 'linear-gradient(135deg, #00f3ff, #b967ff)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'corporate-executive',
+            name: 'Corporate Executive',
+            description: 'Design corporate traditionnel avec structure hiérarchisée et élégance professionnelle',
+            features: ['Structure hiérarchisée claire', 'Éléments décoratifs subtils', 'Palette sophistiquée'],
+            style: 'corporate',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #0099ff, #00f3ff)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'tech-modern',
+            name: 'Tech Modern',
+            description: 'Design moderne et épuré pour les professionnels de la tech et du numérique',
+            features: ['Typographie sans-serif moderne', 'Accents de couleur tech', 'Layout asymétrique'],
+            style: 'tech',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #2563eb, #06b6d4)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'creative-minimal',
+            name: 'Creative Minimal',
+            description: 'Design créatif minimaliste avec des éléments artistiques subtils et une mise en page élégante',
+            features: ['Éléments artistiques subtils', 'Typographie élégante', 'Espaces équilibrés'],
+            style: 'creative-minimal',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #d4af37, #c0c0c0)',
+            price: 500,
+            available: true
+          },
+          {
+            id: 'elegant-classic',
+            name: 'Elegant Classic',
+            description: 'Design classique élégant avec une touche de sophistication moderne',
+            features: ['Typographie serif élégante', 'Structure hiérarchisée', 'Éléments décoratifs subtils'],
+            style: 'classic',
+            popular: false,
+            gradient: 'linear-gradient(135deg, #1e3a8a, #d4af37)',
+            price: 500,
+            available: true
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, []);
 
   const handleTemplateSelect = (templateId) => {
     const template = templates.find(t => t.id === templateId);
@@ -91,7 +169,9 @@ const TemplateSelectionPage = () => {
 
     // Navigate to CV creation page after a short delay for smooth transition
     setTimeout(() => {
+      // Store both frontend ID and backend template ID
       localStorage.setItem('selectedTemplate', selectedTemplateData.id);
+      localStorage.setItem('selectedTemplateBackend', selectedTemplateData.id); // Use backend ID directly
       navigate('/create-cv');
       window.hideLoading && window.hideLoading();
     }, 1500);
@@ -104,7 +184,9 @@ const TemplateSelectionPage = () => {
 
   const handleContinue = () => {
     if (selectedTemplate) {
+      const template = templates.find(t => t.id === selectedTemplate);
       localStorage.setItem('selectedTemplate', selectedTemplate);
+      localStorage.setItem('selectedTemplateBackend', selectedTemplate);
       navigate('/create-cv');
     }
   };
@@ -194,6 +276,123 @@ const TemplateSelectionPage = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Enhanced Header */}
+      <motion.header
+        className={styles.header}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, type: "spring" }}
+      >
+        <div className={styles.headerContent}>
+          <motion.button
+            className={styles.backButton}
+            onClick={handleBack}
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Icons.ArrowLeft />
+            Retour
+          </motion.button>
+
+          <motion.div
+            className={styles.logo}
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className={styles.logoText}>MBOA</span>
+            <span className={styles.logoAccent}>CV</span>
+            <div className={styles.logoPulse} />
+          </motion.div>
+
+          <div className={styles.headerActions}>
+            <motion.button
+              className={styles.dashboardButton}
+              onClick={() => navigate('/dashboard')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Accéder à l'espace professionnel"
+            >
+              <FaUser />
+              <span>Espace Pro</span>
+            </motion.button>
+
+            <motion.div
+              className={styles.stepIndicator}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.4 }}
+            >
+              <div className={styles.stepProgress}>
+                <div className={styles.stepDot} />
+                <div className={styles.stepLine} />
+                <div className={`${styles.stepDot} ${styles.inactive}`} />
+              </div>
+              <span className={styles.stepText}>Étape 1 sur 2</span>
+            </motion.div>
+
+            <motion.button
+              className={styles.logoutButton}
+              onClick={logout}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Se déconnecter"
+            >
+              <FaSignOutAlt />
+              <span>Déconnexion</span>
+            </motion.button>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <motion.button
+            className={`${styles.mobileMenuToggle} ${mobileMenuOpen ? styles.active : ''}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </motion.button>
+        </div>
+      </motion.header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.active : ''}`}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.button
+              className={styles.mobileMenuItem}
+              onClick={() => {
+                navigate('/dashboard');
+                setMobileMenuOpen(false);
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaUser />
+              Espace Professionnel
+            </motion.button>
+
+            <motion.button
+              className={`${styles.mobileMenuItem} ${styles.logout}`}
+              onClick={() => {
+                logout();
+                setMobileMenuOpen(false);
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaSignOutAlt />
+              Déconnexion
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Enhanced Main Content */}
       <motion.main
@@ -235,8 +434,21 @@ const TemplateSelectionPage = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {templates.map((template, index) => (
-              <motion.div
+            {loading ? (
+              <div className={styles.loadingTemplates}>
+                <div className={styles.loadingSpinner}></div>
+                <p>Chargement des templates...</p>
+              </div>
+            ) : error ? (
+              <div className={styles.errorTemplates}>
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()} className={styles.retryBtn}>
+                  Réessayer
+                </button>
+              </div>
+            ) : (
+              templates.map((template, index) => (
+                <motion.div
                 key={template.id}
                 className={`${styles.templateCard} ${selectedTemplate === template.id ? styles.selected : ''} ${template.popular ? styles.popular : ''}`}
                 onClick={() => handleTemplateSelect(template.id)}
@@ -330,7 +542,8 @@ const TemplateSelectionPage = () => {
                   transition={{ duration: 0.3 }}
                 />
               </motion.div>
-            ))}
+              ))
+            )}
           </motion.div>
 
           {/* Enhanced Action Section */}
@@ -502,11 +715,23 @@ const TemplateSelectionPage = () => {
 
               <div className={styles.modalBody}>
                 <div className={styles.templatePreviewLarge}>
-                  <TemplatePreview 
-                    template={selectedTemplateData}
-                    isSelected={true}
-                    isHovered={true}
+                  <img
+                    src="/templateCV.png"
+                    alt={`Aperçu du template ${selectedTemplateData.name}`}
+                    className={styles.templateImage}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      // Fallback to the animated preview
+                      e.target.nextElementSibling.style.display = 'block';
+                    }}
                   />
+                  <div className={styles.templateFallback} style={{ display: 'none' }}>
+                    <TemplatePreview
+                      template={selectedTemplateData}
+                      isSelected={true}
+                      isHovered={true}
+                    />
+                  </div>
                 </div>
 
                 <div className={styles.templateDetails}>
@@ -517,8 +742,8 @@ const TemplateSelectionPage = () => {
                   <div className={styles.templateFeatures}>
                     <h3>Caractéristiques Avancées :</h3>
                     {selectedTemplateData.features.map((feature, i) => (
-                      <motion.div 
-                        key={i} 
+                      <motion.div
+                        key={i}
                         className={styles.featureItem}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -531,7 +756,7 @@ const TemplateSelectionPage = () => {
                   </div>
 
                   <div className={styles.pricingInfo}>
-                    <motion.div 
+                    <motion.div
                       className={styles.priceTag}
                       whileHover={{ scale: 1.05 }}
                     >
