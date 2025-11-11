@@ -8,10 +8,12 @@ class PaymentService {
       try {
         admin.initializeApp({
           credential: admin.credential.cert(require('../serviceAccountKey.json')),
-          // Add your Firebase project config
+          projectId: 'mboa-cv'
         });
+        console.log('Firebase Admin SDK initialized successfully');
       } catch (error) {
-        console.warn('Firebase Admin SDK not initialized - service account key missing');
+        console.error('Firebase Admin SDK initialization failed:', error);
+        console.warn('Firebase Admin SDK not initialized - service account key missing or invalid');
       }
     }
 

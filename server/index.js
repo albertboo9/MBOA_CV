@@ -141,8 +141,11 @@ app.get('/api/user/download-codes', require('./middleware/auth').authenticate, a
 // Templates routes
 app.get('/api/templates', (req, res) => {
   try {
-    const pdfGenerator = require('./services/pdfGenerator');
-    const availableTemplates = pdfGenerator.getAvailableTemplates();
+    const Manager = require("./services/pdfGenerator/TemplateManager")
+    const templatesManager = new Manager()
+    templatesManager.loadTemplates()
+    const availableTemplates = templatesManager.getAvailableTemplates();
+    console.log(availableTemplates)
 
     // Transform backend templates to frontend format
     const templates = availableTemplates.map(template => {

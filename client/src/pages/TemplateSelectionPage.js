@@ -50,11 +50,17 @@ const TemplateSelectionPage = () => {
       try {
         setLoading(true);
         setError(null);
+        console.log('Loading templates from API...');
         const response = await apiService.getTemplates();
-        setTemplates(response.templates || []);
+        console.log('Templates response:', response);
+        if (response.templates && response.templates.length > 0) {
+          setTemplates(response.templates);
+        } else {
+          throw new Error('No templates received from API');
+        }
       } catch (err) {
         console.error('Error loading templates:', err);
-        setError('Erreur lors du chargement des templates');
+        setError('Erreur lors du chargement des templates. Utilisation des templates locaux.');
         // Fallback to hardcoded templates if API fails
         setTemplates([
           {

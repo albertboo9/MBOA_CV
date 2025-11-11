@@ -63,6 +63,7 @@ class TemplateManager {
    */
   getAvailableTemplates() {
     const templates = [];
+    console.log(this.templates)
 
     for (const [id, template] of this.templates) {
       templates.push({
